@@ -1,5 +1,3 @@
-import { useState, useEffect, useRef } from "react";
-import Reveal from "./Reveal";
 import RetroPitch from "../../../dashboard/components/RetroPitch";
 
 interface HeroProps {

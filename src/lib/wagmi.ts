@@ -8,7 +8,6 @@ export const wagmiConfig = createConfig({
     injected({ shimDisconnect: true }),
     coinbaseWallet({
       appName: 'Ailympics',
-      preference: 'all',
     }),
   ],
   multiInjectedProviderDiscovery: true,

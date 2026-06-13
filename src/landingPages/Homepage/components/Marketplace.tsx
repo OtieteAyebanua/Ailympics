@@ -33,6 +33,7 @@ function statLabels(): [string, string, string] {
 function PlayerCard({ player }: { player: Player; needWallet: () => boolean; showToast: (msg: string) => void }) {
   const [owned, setOwned] = useState(false);
   const labels = statLabels();
+  setOwned(false);
 
   return (
     <Reveal className="pcard">

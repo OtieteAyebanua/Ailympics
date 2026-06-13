@@ -1,11 +1,7 @@
 import Reveal from './Reveal';
 import RetroPitchStrategy from '../../../dashboard/components/RetroPitchStrategy';
 
-interface StrategyProps {
-  showToast: (msg: string) => void;
-}
-
-export default function Strategy({ showToast }: StrategyProps) {
+export default function Strategy() {
   return (
     <section className="sec strategy" id="strategy">
       <div className="wrap">

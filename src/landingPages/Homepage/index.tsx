@@ -54,7 +54,7 @@ export default function Homepage() {
       <main>
         <Hero onLaunch={handleLaunch} />
         <Features />
-        <Strategy showToast={showToast} />
+        <Strategy />
         <Marketplace needWallet={needWallet} showToast={showToast} />
         <Train needWallet={needWallet} showToast={showToast} />
         <Leaderboard />

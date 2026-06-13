@@ -1,5 +1,4 @@
 import { useState, useCallback, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
 import '../landingPages/Homepage/style.css';
 import './dashboard.css';
 import Sidebar, { type TabId } from './components/Sidebar';
@@ -27,7 +26,6 @@ const TAB_TITLES: Record<TabId, string> = {
 };
 
 export default function Dashboard() {
-  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<TabId>('overview');
   const [ownedPlayers, setOwnedPlayers] = useState<Player[]>([]);
   const [trainingPoints, setTrainingPoints] = useState(500);

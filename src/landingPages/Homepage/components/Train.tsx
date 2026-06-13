@@ -24,7 +24,7 @@ export default function Train({ needWallet, showToast }: TrainProps) {
   const [training, setTraining] = useState(false);
   const [barsVisible, setBarsVisible] = useState(false);
   const attrRef = useRef<HTMLDivElement>(null);
-
+{training}
   useEffect(() => {
     const el = attrRef.current;
     if (!el) return;
@@ -57,7 +57,7 @@ export default function Train({ needWallet, showToast }: TrainProps) {
   };
 
   return (
-    <section className="sec train" id="train">
+    <section onClick={runTraining} className="sec train" id="train">
       <div className="wrap">
         <Reveal className="sec-head">
           <span className="eyebrow">Training ground</span>
