@@ -9,7 +9,9 @@ export function useWallet(showToast: (msg: string) => void) {
   const { switchChain } = useSwitchChain();
 
   const showToastRef = useRef(showToast);
-  showToastRef.current = showToast;
+  useEffect(() => {
+    showToastRef.current = showToast;
+  }, [showToast]);
 
   const prevConnected = useRef(false);
   useEffect(() => {
@@ -30,22 +32,20 @@ export function useWallet(showToast: (msg: string) => void) {
       return;
     }
 
-    const hasInjected = typeof window !== 'undefined' && !!(window as any).ethereum;
-
-    let targetConnector;
-    if (hasInjected) {
-      // Use injected provider (MetaMask, Phantom, Valora extension, etc.)
-      targetConnector = connectors.find(c => c.type === 'injected') ?? connectors[0];
-    } else {
-      // No browser extension — use Coinbase Wallet (shows popup / smart wallet flow)
-      targetConnector = connectors.find(c => c.id === 'coinbaseWalletSDK') ?? connectors[0];
+    // Use Coinbase Wallet (Smart Wallet) which provides a built-in modal
+    // covering both Coinbase Wallet and installed injected wallets
+    let targetConnector = connectors.find(c => c.id === 'coinbaseWalletSDK');
+    
+    if (!targetConnector) {
+      targetConnector = connectors[0]; // fallback
     }
 
     if (!targetConnector) {
-      showToastRef.current('No wallet detected. Install MetaMask or Phantom.');
+      showToastRef.current('No wallet detected.');
       return;
     }
 
+    console.log('[Ailympics] All connectors:', connectors.map(c => ({ id: c.id, name: c.name, type: c.type })));
     console.log('[Ailympics] Connecting with:', targetConnector.id, targetConnector.name);
 
     connect(

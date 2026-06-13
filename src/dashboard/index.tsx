@@ -98,9 +98,6 @@ export default function Dashboard() {
                 ⚠ Switch to Celo ({networkName})
               </span>
             )}
-            <button className="q-btn" onClick={() => navigate('/')} style={{ fontSize: 12 }}>
-              ← Back to site
-            </button>
           </div>
         </header>
 
