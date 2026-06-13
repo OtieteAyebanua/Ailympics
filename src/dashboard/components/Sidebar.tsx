@@ -1,4 +1,4 @@
-export type TabId = 'overview' | 'squad' | 'marketplace' | 'strategy' | 'training' | 'wagers' | 'leaderboard';
+export type TabId = 'overview' | 'squad' | 'marketplace' | 'strategy' | 'training' | 'wagers' | 'leaderboard' | 'matches';
 
 interface Tab {
   id: TabId;
@@ -77,6 +77,17 @@ const tabs: Tab[] = [
     ),
   },
   {
+    id: 'matches',
+    label: 'Live Matches',
+    icon: (
+      <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
+        <circle cx={12} cy={12} r={10} />
+        <path d="M12 8c-1.5 0-3 .5-4 1.5L6 12l2 2.5 1.5-1 .5 3h4l.5-3 1.5 1L18 12l-2-2.5C15 8.5 13.5 8 12 8z" fill="currentColor" stroke="none" opacity={0.5} />
+        <path d="M12 2v4M12 18v4M2 12h4M18 12h4" />
+      </svg>
+    ),
+  },
+  {
     id: 'leaderboard',
     label: 'Leaderboard',
     icon: (
@@ -94,9 +105,10 @@ interface SidebarProps {
   connected: boolean;
   walletAddr: string;
   onConnect: () => void;
+  liveCount?: number;
 }
 
-export default function Sidebar({ activeTab, onTabChange, connected, walletAddr, onConnect }: SidebarProps) {
+export default function Sidebar({ activeTab, onTabChange, connected, walletAddr, onConnect, liveCount = 0 }: SidebarProps) {
   let lastGroup: string | undefined;
 
   return (
@@ -117,9 +129,24 @@ export default function Sidebar({ activeTab, onTabChange, connected, walletAddr,
               <button
                 className={`nav-item${activeTab === tab.id ? ' active' : ''}`}
                 onClick={() => onTabChange(tab.id)}
+                style={{ position: 'relative' }}
               >
                 {tab.icon}
                 <span>{tab.label}</span>
+                {tab.id === 'matches' && liveCount > 0 && (
+                  <span style={{
+                    marginLeft: 'auto',
+                    background: '#ff4d4d',
+                    color: '#fff',
+                    fontSize: 9,
+                    fontWeight: 700,
+                    padding: '2px 6px',
+                    borderRadius: 10,
+                    lineHeight: 1.4,
+                  }}>
+                    {liveCount}
+                  </span>
+                )}
               </button>
             </div>
           );

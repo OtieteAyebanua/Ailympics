@@ -1,4 +1,5 @@
-import { useState, useCallback, useRef } from 'react';
+import { useState, useCallback, useRef, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import './style.css';
 import Nav from './components/Nav';
 import Hero from './components/Hero';
@@ -12,11 +13,8 @@ import Footer from './components/Footer';
 import Toast from './components/Toast';
 import { useWallet } from '../../hooks/useWallet';
 
-interface HomepageProps {
-  onNavigate?: () => void;
-}
-
-export default function Homepage({ onNavigate }: HomepageProps) {
+export default function Homepage() {
+  const navigate = useNavigate();
   const [toastMsg, setToastMsg] = useState('');
   const [toastVisible, setToastVisible] = useState(false);
   const toastTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
@@ -30,13 +28,25 @@ export default function Homepage({ onNavigate }: HomepageProps) {
 
   const { connected, walletAddr, toggleConnect, needWallet } = useWallet(showToast);
 
-  const handleLaunch = useCallback(() => {
-    if (onNavigate) {
-      onNavigate();
-    } else {
-      showToast('App launching soon — join the waitlist!');
+  const [pendingNavigate, setPendingNavigate] = useState(false);
+
+  // Auto-navigate once wallet connects if user clicked Launch App while disconnected
+  useEffect(() => {
+    if (pendingNavigate && connected) {
+      setPendingNavigate(false);
+      navigate('/app');
     }
-  }, [onNavigate, showToast]);
+  }, [pendingNavigate, connected, navigate]);
+
+  const handleLaunch = useCallback(() => {
+    if (!connected) {
+      showToast('Connect your wallet to enter the app');
+      setPendingNavigate(true);
+      toggleConnect();
+      return;
+    }
+    navigate('/app');
+  }, [connected, navigate, showToast, toggleConnect]);
 
   return (
     <>

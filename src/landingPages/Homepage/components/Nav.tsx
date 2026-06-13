@@ -40,7 +40,7 @@ export default function Nav({ connected, walletAddr, onConnect, onLaunch }: NavP
           <b>AILYMPICS</b>
         </a>
 
-        <div className="nav-cta">
+        <div className="nav-cta" style={menuStyle}>
           <button className="btn btn-ghost btn-sm" onClick={onLaunch}>Launch App</button>
           <button
             className={`btn btn-primary btn-sm wallet-btn${connected ? ' connected' : ''}`}

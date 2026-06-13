@@ -5,9 +5,13 @@ import { coinbaseWallet, injected } from 'wagmi/connectors';
 export const wagmiConfig = createConfig({
   chains: [celo, celoAlfajores],
   connectors: [
-    injected(),
-    coinbaseWallet({ appName: 'Ailympics' }),
+    injected({ shimDisconnect: true }),
+    coinbaseWallet({
+      appName: 'Ailympics',
+      preference: 'all',
+    }),
   ],
+  multiInjectedProviderDiscovery: true,
   transports: {
     [celo.id]: http('https://forno.celo.org'),
     [celoAlfajores.id]: http('https://alfajores-forno.celo-testnet.org'),

@@ -29,23 +29,41 @@ export function useWallet(showToast: (msg: string) => void) {
       disconnect({ connector });
       return;
     }
-    const connector =
-      connectors.find(c => c.type === 'injected') ?? connectors[0];
-    if (connector) {
-      connect(
-        { connector },
-        {
-          onError(err) {
-            const msg = err.message ?? '';
-            if (!msg.toLowerCase().includes('reject') && !msg.toLowerCase().includes('cancel')) {
-              showToastRef.current('Connection failed — is a wallet installed?');
-            }
-          },
-        },
-      );
+
+    const hasInjected = typeof window !== 'undefined' && !!(window as any).ethereum;
+
+    let targetConnector;
+    if (hasInjected) {
+      // Use injected provider (MetaMask, Phantom, Valora extension, etc.)
+      targetConnector = connectors.find(c => c.type === 'injected') ?? connectors[0];
     } else {
-      showToastRef.current('No wallet detected. Install MetaMask or Valora.');
+      // No browser extension — use Coinbase Wallet (shows popup / smart wallet flow)
+      targetConnector = connectors.find(c => c.id === 'coinbaseWalletSDK') ?? connectors[0];
     }
+
+    if (!targetConnector) {
+      showToastRef.current('No wallet detected. Install MetaMask or Phantom.');
+      return;
+    }
+
+    console.log('[Ailympics] Connecting with:', targetConnector.id, targetConnector.name);
+
+    connect(
+      { connector: targetConnector },
+      {
+        onSuccess() {
+          console.log('[Ailympics] Wallet connected successfully');
+        },
+        onError(err) {
+          console.error('[Ailympics] Connection error:', err);
+          const msg = err.message ?? '';
+          if (msg.toLowerCase().includes('reject') || msg.toLowerCase().includes('cancel')) {
+            return; // user cancelled — don't show error
+          }
+          showToastRef.current('Connection failed — is a wallet installed?');
+        },
+      },
+    );
   }, [isConnected, connector, connect, disconnect, connectors]);
 
   const needWallet = useCallback((): boolean => {

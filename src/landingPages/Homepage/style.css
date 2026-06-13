@@ -88,7 +88,7 @@ header.nav.scrolled{
 
 /* ---------- Hero ---------- */
 .hero{position:relative;padding:150px 0 80px;overflow:hidden;}
-.hero-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:54px;align-items:center}
+.hero-grid{display:flex;align-items:start;justify-content: space-between;}
 .hero h1{font-size:clamp(46px,6.4vw,92px);margin:18px 0 0}
 .hero h1 .hl{color:var(--accent);position:relative;display:inline-block}
 .hero p.lead{font-size:clamp(16px,1.5vw,19px);color:var(--muted);max-width:520px;margin-top:22px}

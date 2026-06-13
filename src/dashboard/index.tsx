@@ -1,4 +1,5 @@
 import { useState, useCallback, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import '../landingPages/Homepage/style.css';
 import './dashboard.css';
 import Sidebar, { type TabId } from './components/Sidebar';
@@ -10,7 +11,8 @@ import Strategy from './tabs/Strategy';
 import Training from './tabs/Training';
 import Wagers from './tabs/Wagers';
 import Leaderboard from './tabs/Leaderboard';
-import { type Player } from './data';
+import Matches from './tabs/Matches';
+import { type Player, matches } from './data';
 import { useWallet } from '../hooks/useWallet';
 
 const TAB_TITLES: Record<TabId, string> = {
@@ -21,15 +23,14 @@ const TAB_TITLES: Record<TabId, string> = {
   training:    'Training Ground',
   wagers:      'Wagers',
   leaderboard: 'Leaderboard',
+  matches:     'Live Matches',
 };
 
-interface DashboardProps {
-  onBack?: () => void;
-}
-
-export default function Dashboard({ onBack }: DashboardProps) {
+export default function Dashboard() {
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<TabId>('overview');
   const [ownedPlayers, setOwnedPlayers] = useState<Player[]>([]);
+  const [trainingPoints, setTrainingPoints] = useState(500);
   const [toastMsg, setToastMsg] = useState('');
   const [toastVisible, setToastVisible] = useState(false);
   const toastTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
@@ -67,11 +68,13 @@ export default function Dashboard({ onBack }: DashboardProps) {
       case 'strategy':
         return <Strategy showToast={showToast} />;
       case 'training':
-        return <Training ownedPlayers={ownedPlayers} needWallet={needWallet} showToast={showToast} />;
+        return <Training ownedPlayers={ownedPlayers} needWallet={needWallet} showToast={showToast} trainingPoints={trainingPoints} onSpendPoints={pts => setTrainingPoints(p => p - pts)} />;
       case 'wagers':
         return <Wagers needWallet={needWallet} showToast={showToast} />;
       case 'leaderboard':
         return <Leaderboard />;
+      case 'matches':
+        return <Matches onTabChange={setActiveTab} showToast={showToast} />;
     }
   };
 
@@ -83,6 +86,7 @@ export default function Dashboard({ onBack }: DashboardProps) {
         connected={connected}
         walletAddr={walletAddr}
         onConnect={toggleConnect}
+        liveCount={matches.filter(m => m.live).length}
       />
 
       <div className="dash-content">
@@ -94,11 +98,9 @@ export default function Dashboard({ onBack }: DashboardProps) {
                 ⚠ Switch to Celo ({networkName})
               </span>
             )}
-            {onBack && (
-              <button className="q-btn" onClick={onBack} style={{ fontSize: 12 }}>
-                ← Back to site
-              </button>
-            )}
+            <button className="q-btn" onClick={() => navigate('/')} style={{ fontSize: 12 }}>
+              ← Back to site
+            </button>
           </div>
         </header>
 
