@@ -11,8 +11,9 @@ import Training from './tabs/Training';
 import Wagers from './tabs/Wagers';
 import Leaderboard from './tabs/Leaderboard';
 import Matches from './tabs/Matches';
-import { type Player, matches } from './data';
+import { matches } from './data';
 import { useWallet } from '../hooks/useWallet';
+import { useSquad } from '../hooks/useSquad';
 
 const TAB_TITLES: Record<TabId, string> = {
   overview:    'Overview',
@@ -27,9 +28,7 @@ const TAB_TITLES: Record<TabId, string> = {
 
 export default function Dashboard() {
   const [activeTab, setActiveTab] = useState<TabId>('overview');
-  const [ownedPlayers, setOwnedPlayers] = useState<Player[]>([]);
-  const [trainingPoints, setTrainingPoints] = useState(500);
-  const [toastMsg, setToastMsg] = useState('');
+  const [toastMsg, setToastMsg]   = useState('');
   const [toastVisible, setToastVisible] = useState(false);
   const toastTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
 
@@ -43,30 +42,44 @@ export default function Dashboard() {
   const { connected, walletAddr, onCelo, networkName, toggleConnect, needWallet } =
     useWallet(showToast);
 
-  const ownedIds = new Set(ownedPlayers.map(p => p.id));
-
-  const handleBuy = useCallback((player: Player) => {
-    setOwnedPlayers(prev =>
-      prev.some(p => p.id === player.id) ? prev : [...prev, player]
-    );
-  }, []);
-
-  const handleSell = useCallback((id: number) => {
-    setOwnedPlayers(prev => prev.filter(p => p.id !== id));
-  }, []);
+  const squad = useSquad();
 
   const renderTab = () => {
     switch (activeTab) {
       case 'overview':
-        return <Overview ownedPlayers={ownedPlayers} onTabChange={setActiveTab} connected={connected} />;
+        return (
+          <Overview
+            squad={squad}
+            onTabChange={setActiveTab}
+            connected={connected}
+          />
+        );
       case 'squad':
-        return <Squad ownedPlayers={ownedPlayers} onSell={handleSell} onTabChange={setActiveTab} showToast={showToast} />;
+        return (
+          <Squad
+            squad={squad}
+            onTabChange={setActiveTab}
+            showToast={showToast}
+          />
+        );
       case 'marketplace':
-        return <Marketplace ownedIds={ownedIds} onBuy={handleBuy} onSell={handleSell} needWallet={needWallet} showToast={showToast} />;
+        return (
+          <Marketplace
+            squad={squad}
+            needWallet={needWallet}
+            showToast={showToast}
+          />
+        );
       case 'strategy':
         return <Strategy showToast={showToast} />;
       case 'training':
-        return <Training ownedPlayers={ownedPlayers} needWallet={needWallet} showToast={showToast} trainingPoints={trainingPoints} onSpendPoints={pts => setTrainingPoints(p => p - pts)} />;
+        return (
+          <Training
+            squad={squad}
+            needWallet={needWallet}
+            showToast={showToast}
+          />
+        );
       case 'wagers':
         return <Wagers needWallet={needWallet} showToast={showToast} />;
       case 'leaderboard':

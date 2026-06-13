@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import Reveal from './Reveal';
 
 interface MarketplaceProps {
@@ -31,9 +30,7 @@ function statLabels(): [string, string, string] {
 }
 
 function PlayerCard({ player }: { player: Player; needWallet: () => boolean; showToast: (msg: string) => void }) {
-  const [owned, setOwned] = useState(false);
   const labels = statLabels();
-  setOwned(false);
 
   return (
     <Reveal className="pcard">
@@ -55,7 +52,7 @@ function PlayerCard({ player }: { player: Player; needWallet: () => boolean; sho
             <b><span className="tk">Ξ</span>{player.price}</b>
             <span>{player.usd}</span>
           </div>
-          <button className={`buy${owned ? ' owned' : ''}`} >
+          <button className="buy">
              Buy
           </button>
         </div>

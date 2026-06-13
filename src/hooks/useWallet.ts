@@ -1,6 +1,9 @@
 import { useCallback, useEffect, useRef } from 'react';
 import { useAccount, useConnect, useDisconnect, useSwitchChain } from 'wagmi';
+import { signMessage } from 'wagmi/actions';
 import { celo } from 'wagmi/chains';
+import { wagmiConfig } from '../lib/wagmi';
+import { signInWithWallet, signOut, restoreSession } from '../lib/auth';
 
 export function useWallet(showToast: (msg: string) => void) {
   const { address, isConnected, chain, connector } = useAccount();
@@ -17,14 +20,27 @@ export function useWallet(showToast: (msg: string) => void) {
   useEffect(() => {
     if (isConnected && !prevConnected.current) {
       showToastRef.current('Wallet connected');
-      if (chain?.id !== celo.id) {
-        switchChain({ chainId: celo.id });
+      if (chain?.id !== celo.id) switchChain({ chainId: celo.id });
+
+      if (address) {
+        if (restoreSession()) return;
+        setTimeout(() => {
+          signInWithWallet(address, (msg) =>
+            signMessage(wagmiConfig, { account: address as `0x${string}`, message: msg }),
+          ).catch((err: Error) => {
+            const reason = err?.message ?? String(err);
+            console.error('[Ailympics] Auth error:', reason);
+            if (reason.toLowerCase().includes('reject') || reason.toLowerCase().includes('cancel') || reason.toLowerCase().includes('denied')) return;
+            showToastRef.current(`Sign-in failed: ${reason}`);
+          });
+        }, 300);
       }
     } else if (!isConnected && prevConnected.current) {
       showToastRef.current('Wallet disconnected');
+      signOut();
     }
     prevConnected.current = isConnected;
-  }, [isConnected, chain?.id, switchChain]);
+  }, [isConnected, chain?.id, switchChain, address]);
 
   const toggleConnect = useCallback(() => {
     if (isConnected) {

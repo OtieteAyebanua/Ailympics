@@ -1,18 +1,22 @@
 import { type TabId } from '../components/Sidebar';
-import { type Player, gameHistory } from '../data';
+import { type SquadState } from '../../hooks/useSquad';
+import { gameHistory } from '../data';
 
 interface OverviewProps {
-  ownedPlayers: Player[];
+  squad:       SquadState;
   onTabChange: (tab: TabId) => void;
-  connected: boolean;
+  connected:   boolean;
 }
 
-export default function Overview({ ownedPlayers, onTabChange, connected }: OverviewProps) {
-  const portfolioValue = ownedPlayers
-    .reduce((acc, p) => acc + parseFloat(p.price), 0)
-    .toFixed(1);
+export default function Overview({ squad, onTabChange, connected }: OverviewProps) {
+  const { players, count, limit, trainingPoints } = squad;
 
-  const wins   = gameHistory.filter(g => g.result === 'W').length;
+  const portfolioValue = players
+    .filter(p => p.is_nft)
+    .reduce((acc, p) => acc + p.price_eth, 0)
+    .toFixed(2);
+
+  const wins  = gameHistory.filter(g => g.result === 'W').length;
   const losses = gameHistory.filter(g => g.result === 'L').length;
   const draws  = gameHistory.filter(g => g.result === 'D').length;
 
@@ -30,9 +34,9 @@ export default function Overview({ ownedPlayers, onTabChange, connected }: Overv
             </div>
             <div className="sc-value">
               <span className="sc-unit">Ξ </span>
-              {ownedPlayers.length > 0 ? portfolioValue : '0.0'}
+              {players.length > 0 ? portfolioValue : '0.00'}
             </div>
-            <div className="sc-sub">{ownedPlayers.length} player{ownedPlayers.length !== 1 ? 's' : ''} owned</div>
+            <div className="sc-sub">{players.filter(p => p.is_nft).length} NFT player{players.filter(p => p.is_nft).length !== 1 ? 's' : ''} owned</div>
           </div>
 
           <div className="stat-card">
@@ -42,24 +46,23 @@ export default function Overview({ ownedPlayers, onTabChange, connected }: Overv
               </svg>
               Squad Size
             </div>
-            <div className="sc-value">{ownedPlayers.length}<span className="sc-unit" style={{ fontSize: 14 }}> / 25</span></div>
+            <div className="sc-value">
+              {count}<span className="sc-unit" style={{ fontSize: 14 }}> / {limit}</span>
+            </div>
             <div className="sc-sub">
-              {ownedPlayers.filter(p => p.sport === 'football').length} football players
+              {players.filter(p => p.sport === 'football').length} football players
             </div>
           </div>
 
           <div className="stat-card">
             <div className="sc-label">
               <svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
-                <rect x={2} y={2} width={20} height={20} rx={4} />
-                <circle cx={8} cy={8} r={1.2} fill="currentColor" /><circle cx={16} cy={8} r={1.2} fill="currentColor" />
-                <circle cx={8} cy={16} r={1.2} fill="currentColor" /><circle cx={16} cy={16} r={1.2} fill="currentColor" />
-                <circle cx={12} cy={12} r={1.2} fill="currentColor" />
+                <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
               </svg>
-              Active Wagers
+              Training Points
             </div>
-            <div className="sc-value">0</div>
-            <div className="sc-sub">Ξ 0.0 at stake</div>
+            <div className="sc-value">{trainingPoints}</div>
+            <div className="sc-sub">Available to spend</div>
           </div>
 
           <div className="stat-card">

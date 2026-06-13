@@ -1,92 +1,134 @@
-import { useState } from 'react';
-import { players, type Player } from '../data';
+import { useState, useEffect } from 'react';
+import { type DbPlayer } from '../../models/models';
+import { type SquadState } from '../../hooks/useSquad';
+import { getCloneablePlayers, getNFTPlayers } from '../../lib/marketplace';
+import { getPlayerStats } from '../../lib/playerUtils';
 
 interface MarketplaceProps {
-  ownedIds: Set<number>;
-  onBuy: (player: Player) => void;
-  onSell: (id: number) => void;
+  squad:      SquadState;
   needWallet: () => boolean;
-  showToast: (msg: string) => void;
+  showToast:  (msg: string) => void;
 }
 
-type SportFilter = 'all' | 'football';
+type Tab = 'clone' | 'nft';
 
-export default function Marketplace({ ownedIds, onBuy, onSell, needWallet, showToast }: MarketplaceProps) {
-  const [sport, setSport] = useState<SportFilter>('all');
+export default function Marketplace({ squad, needWallet, showToast }: MarketplaceProps) {
+  const [tab,            setTab]            = useState<Tab>('clone');
+  const [cloneables,     setCloneables]     = useState<DbPlayer[]>([]);
+  const [nfts,           setNfts]           = useState<DbPlayer[]>([]);
+  const [loadingCatalog, setLoadingCatalog] = useState(true);
+  const [cloning,        setCloning]        = useState<number | null>(null);
 
-  const visible = sport === 'all' ? players : players.filter(p => p.sport === sport);
+  const { players, count, limit, clone } = squad;
+  const ownedIds = new Set(players.map(p => p.id));
 
-  const handleAction = (p: Player) => {
-    if (ownedIds.has(p.id)) {
-      onSell(p.id);
-      showToast(`${p.name} listed for sale`);
-    } else {
-      if (!needWallet()) return;
-      onBuy(p);
-      showToast(`Signed ${p.name} for Ξ${p.price}`);
-    }
+  useEffect(() => {
+    setLoadingCatalog(true);
+    Promise.all([getCloneablePlayers(), getNFTPlayers()])
+      .then(([c, n]) => { setCloneables(c); setNfts(n); })
+      .catch(err => showToast(err.message))
+      .finally(() => setLoadingCatalog(false));
+  }, []);
+
+  const handleClone = async (player: DbPlayer) => {
+    if (!needWallet()) return;
+    if (count >= limit) { showToast(`Squad full — release a player first (${count}/${limit})`); return; }
+
+    setCloning(player.id);
+    const err = await clone(player.id);
+    setCloning(null);
+
+    if (err) showToast(err);
+    else     showToast(`${player.name} added to your squad`);
   };
+
+  const visible = tab === 'clone' ? cloneables : nfts;
 
   return (
     <div>
       <div className="tab-toolbar">
-        <div className="mkt-search">
-          <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
-            <circle cx={11} cy={11} r={8} /><path d="M21 21l-4.35-4.35" />
-          </svg>
-          Search players…
-        </div>
         <div className="filter-pills">
-          {(['all', 'football'] as SportFilter[]).map(f => (
-            <button
-              key={f}
-              className={`filter-pill${sport === f ? ' active' : ''}`}
-              onClick={() => setSport(f)}
-            >
-              {f === 'all' ? 'All' : f.charAt(0).toUpperCase() + f.slice(1)}
-            </button>
-          ))}
+          <button className={`filter-pill${tab === 'clone' ? ' active' : ''}`} onClick={() => setTab('clone')}>
+            Free Clone
+          </button>
+          <button className={`filter-pill${tab === 'nft' ? ' active' : ''}`} onClick={() => setTab('nft')}>
+            NFT Players
+          </button>
         </div>
         <span style={{ fontSize: 13, color: 'var(--faint)', marginLeft: 'auto' }}>
-          {visible.length} players
+          {count} / {limit} squad slots
         </span>
       </div>
 
-      <div className="cards">
-        {visible.map(p => {
-          const owned = ownedIds.has(p.id);
-          return (
-            <div key={p.id} className="pcard">
-              <div className="ph">
-                <span className={`rare${p.icon ? ' icon' : ''}`}>{p.rare}</span>
-                <span className="ovr">{p.ovr}</span>
-                <span className="ph-label">player render</span>
-              </div>
-              <div className="body">
-                <div className="nm">{p.name}</div>
-                <div className="pos">{p.pos} · {p.sport}</div>
-                <div className="stats-row">
-                  {p.stats.map(s => (
-                    <div key={s.label} className="s">
-                      <b>{s.val}</b>
-                      <span>{s.label}</span>
-                    </div>
-                  ))}
+      {loadingCatalog ? (
+        <div style={{ textAlign: 'center', padding: '48px 0', color: 'var(--muted)', fontSize: 14 }}>
+          Loading players…
+        </div>
+      ) : visible.length === 0 ? (
+        <div style={{ textAlign: 'center', padding: '48px 0', color: 'var(--muted)', fontSize: 14 }}>
+          No players available yet.
+        </div>
+      ) : (
+        <div className="cards">
+          {visible.map(p => {
+            const stats   = getPlayerStats(p).slice(0, 3);
+            const owned   = ownedIds.has(p.id);
+            const isCloning = cloning === p.id;
+
+            return (
+              <div key={p.id} className="pcard">
+                <div className="ph">
+                  <span className={`rare${p.is_icon ? ' icon' : ''}`}>{p.rarity}</span>
+                  <span className="ovr">{p.base_ovr}</span>
+                  <span className="ph-label">player render</span>
                 </div>
-                <div className="foot">
-                  <div className="price">
-                    <b><span className="tk">Ξ</span>{p.price}</b>
-                    <span>{p.usd}</span>
+                <div className="body">
+                  <div className="nm">{p.name}</div>
+                  <div className="pos">{p.position} · {p.sport}</div>
+                  <div className="stats-row">
+                    {stats.map(s => (
+                      <div key={s.label} className="s">
+                        <b>{s.val}</b>
+                        <span>{s.label}</span>
+                      </div>
+                    ))}
                   </div>
-                  <button className={`buy${owned ? ' owned' : ''}`} onClick={() => handleAction(p)}>
-                    {owned ? 'Sell' : 'Buy'}
-                  </button>
+                  <div className="foot">
+                    <div className="price">
+                      {tab === 'nft' ? (
+                        <b><span className="tk">Ξ</span>{p.price_eth}</b>
+                      ) : (
+                        <span style={{ fontSize: 12, color: 'var(--accent)', fontWeight: 600 }}>Free</span>
+                      )}
+                    </div>
+                    {tab === 'clone' && (
+                      <button
+                        className={`buy${owned ? ' owned' : ''}`}
+                        disabled={owned || isCloning || count >= limit}
+                        onClick={() => handleClone(p)}
+                      >
+                        {isCloning ? '…' : owned ? 'In Squad' : 'Clone'}
+                      </button>
+                    )}
+                    {tab === 'nft' && (
+                      <button
+                        className={`buy${owned ? ' owned' : ''}`}
+                        disabled={owned}
+                        onClick={() => {
+                          if (!needWallet()) return;
+                          showToast('On-chain purchase coming soon');
+                        }}
+                      >
+                        {owned ? 'Owned' : 'Buy'}
+                      </button>
+                    )}
+                  </div>
                 </div>
               </div>
-            </div>
-          );
-        })}
-      </div>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 }
