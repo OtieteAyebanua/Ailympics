@@ -1,135 +1,85 @@
 import { useState, useRef } from 'react';
+import RetroPitchStrategy, { type RetroPitchStrategyHandle } from '../components/RetroPitchStrategy';
+import { DEFAULT_HOME_433, type PlayerPos } from '../components/RetroPitch';
 
 interface StrategyProps {
   showToast: (msg: string) => void;
 }
 
-type ChipData = { role: string; x: number; y: number };
+const F442: PlayerPos[] = [
+  { id: 1,  x: 50, y: 6,  num: 1  },
+  { id: 2,  x: 20, y: 18, num: 2  }, { id: 3,  x: 38, y: 16, num: 5  },
+  { id: 4,  x: 62, y: 16, num: 4  }, { id: 5,  x: 80, y: 18, num: 3  },
+  { id: 6,  x: 18, y: 30, num: 8  }, { id: 7,  x: 38, y: 32, num: 6  },
+  { id: 8,  x: 62, y: 32, num: 10 }, { id: 9,  x: 82, y: 30, num: 7  },
+  { id: 10, x: 36, y: 43, num: 9  }, { id: 11, x: 64, y: 43, num: 11 },
+];
 
-const formations: Record<string, ChipData[]> = {
-  '442': [
-    { role: 'GK', x: 50, y: 90 }, { role: 'DEF', x: 18, y: 72 }, { role: 'DEF', x: 39, y: 75 },
-    { role: 'DEF', x: 61, y: 75 }, { role: 'DEF', x: 82, y: 72 }, { role: 'MID', x: 18, y: 48 },
-    { role: 'MID', x: 39, y: 50 }, { role: 'MID', x: 61, y: 50 }, { role: 'MID', x: 82, y: 48 },
-    { role: 'FWD', x: 38, y: 24 }, { role: 'FWD', x: 62, y: 24 },
-  ],
-  '433': [
-    { role: 'GK', x: 50, y: 90 }, { role: 'DEF', x: 16, y: 72 }, { role: 'DEF', x: 38, y: 75 },
-    { role: 'DEF', x: 62, y: 75 }, { role: 'DEF', x: 84, y: 72 }, { role: 'MID', x: 30, y: 52 },
-    { role: 'MID', x: 50, y: 56 }, { role: 'MID', x: 70, y: 52 }, { role: 'FWD', x: 24, y: 26 },
-    { role: 'FWD', x: 50, y: 20 }, { role: 'FWD', x: 76, y: 26 },
-  ],
-  '352': [
-    { role: 'GK', x: 50, y: 90 }, { role: 'DEF', x: 30, y: 74 }, { role: 'DEF', x: 50, y: 77 },
-    { role: 'DEF', x: 70, y: 74 }, { role: 'MID', x: 16, y: 52 }, { role: 'MID', x: 35, y: 54 },
-    { role: 'MID', x: 50, y: 48 }, { role: 'MID', x: 65, y: 54 }, { role: 'MID', x: 84, y: 52 },
-    { role: 'FWD', x: 40, y: 24 }, { role: 'FWD', x: 60, y: 24 },
-  ],
+const F352: PlayerPos[] = [
+  { id: 1,  x: 50, y: 6,  num: 1  },
+  { id: 2,  x: 30, y: 17, num: 5  }, { id: 3,  x: 50, y: 15, num: 4  }, { id: 4,  x: 70, y: 17, num: 6  },
+  { id: 5,  x: 14, y: 30, num: 2  }, { id: 6,  x: 34, y: 32, num: 8  },
+  { id: 7,  x: 50, y: 29, num: 10 },
+  { id: 8,  x: 66, y: 32, num: 3  }, { id: 9,  x: 86, y: 30, num: 7  },
+  { id: 10, x: 36, y: 43, num: 9  }, { id: 11, x: 64, y: 43, num: 11 },
+];
+
+const FORMATIONS: Record<string, { label: string; players: PlayerPos[] }> = {
+  '433': { label: '4-3-3', players: DEFAULT_HOME_433 },
+  '442': { label: '4-4-2', players: F442 },
+  '352': { label: '3-5-2', players: F352 },
 };
 
-const labels: Record<string, string> = { '442': '4-4-2', '433': '4-3-3', '352': '3-5-2' };
-
 export default function Strategy({ showToast }: StrategyProps) {
-  const [formation, setFormation] = useState('442');
-  const [chips, setChips] = useState<ChipData[]>(formations['442']);
-  const [draggingIdx, setDraggingIdx] = useState<number | null>(null);
-  const pitchRef = useRef<HTMLDivElement>(null);
+  const [formation, setFormation] = useState<keyof typeof FORMATIONS>('433');
+  const pitchRef = useRef<RetroPitchStrategyHandle>(null);
 
-  const applyFormation = (key: string) => {
-    setChips([...formations[key]]);
+  const handleFormationChange = (key: string) => {
     setFormation(key);
+    showToast(`Switched to ${FORMATIONS[key].label}`);
   };
 
-  const onPointerDown = (idx: number, e: React.PointerEvent<HTMLDivElement>) => {
-    e.currentTarget.setPointerCapture(e.pointerId);
-    setDraggingIdx(idx);
+  const handleReset = () => {
+    pitchRef.current?.reset();
+    showToast('Formation reset');
   };
 
-  const onPointerMove = (idx: number, e: React.PointerEvent<HTMLDivElement>) => {
-    if (draggingIdx !== idx) return;
-    const pitch = pitchRef.current;
-    if (!pitch) return;
-    const r = pitch.getBoundingClientRect();
-    const x = Math.max(5, Math.min(95, ((e.clientX - r.left) / r.width) * 100));
-    const y = Math.max(5, Math.min(95, ((e.clientY - r.top) / r.height) * 100));
-    setChips(prev => prev.map((c, i) => (i === idx ? { ...c, x, y } : c)));
-  };
-
-  const onPointerUp = (idx: number) => {
-    if (draggingIdx === idx) setDraggingIdx(null);
+  const handleSave = () => {
+    showToast('Tactics saved');
   };
 
   return (
     <div>
-      <div className="strat-shell">
-        <div className="strat-top">
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <span style={{ fontSize: 12, color: 'var(--faint)', fontWeight: 600, letterSpacing: '0.05em', textTransform: 'uppercase' }}>
-              Formation
-            </span>
-            <div className="formation-pills" style={{ display: 'flex', gap: 6 }}>
-              {Object.keys(formations).map(f => (
-                <button
-                  key={f}
-                  className={`${formation === f ? 'active' : ''}`}
-                  style={{
-                    fontSize: 12, fontWeight: 600, padding: '6px 12px', borderRadius: 999,
-                    color: formation === f ? 'var(--ink)' : 'var(--muted)',
-                    background: formation === f ? 'var(--accent)' : 'none',
-                    border: formation === f ? 'none' : '1px solid var(--line)',
-                    cursor: 'pointer', fontFamily: 'inherit',
-                  }}
-                  onClick={() => { applyFormation(f); showToast(`Switched to ${labels[f]}`); }}
-                >
-                  {labels[f]}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          <button
-            className="reset"
-            style={{ fontSize: 12, color: 'var(--faint)', fontWeight: 600, display: 'flex', alignItems: 'center', gap: 6, cursor: 'pointer', border: 'none', background: 'none', fontFamily: 'inherit' }}
-            onClick={() => { applyFormation(formation); showToast('Formation reset'); }}
-          >
+      <div className="tab-toolbar" style={{ marginBottom: 16 }}>
+        <div className="filter-pills">
+          {Object.entries(FORMATIONS).map(([key, { label }]) => (
+            <button
+              key={key}
+              className={`filter-pill${formation === key ? ' active' : ''}`}
+              onClick={() => handleFormationChange(key)}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+        <div style={{ display: 'flex', gap: 8 }}>
+          <button className="q-btn primary" onClick={handleSave}>
+            Save tactics
+          </button>
+          <button className="q-btn" onClick={handleReset}>
             <svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
               <path d="M3 12a9 9 0 109-9 9 9 0 00-6.3 2.6L3 8" /><path d="M3 3v5h5" />
             </svg>
             Reset
           </button>
         </div>
-
-        <div style={{ position: 'relative' }}>
-          <div
-            className="pitch"
-            ref={pitchRef}
-            style={{ aspectRatio: '5/4' }}
-          >
-            <div className="lines" />
-            <div className="center-line" />
-            <div className="center-circle" />
-            <div className="center-dot" />
-            <div className="box top" /><div className="box bot" />
-            <div className="box-sm top" /><div className="box-sm bot" />
-
-            {chips.map((chip, idx) => (
-              <div
-                key={idx}
-                className={`chip${chip.role === 'GK' ? ' gk' : ''}${draggingIdx === idx ? ' dragging' : ''}`}
-                style={{ left: `${chip.x}%`, top: `${chip.y}%` }}
-                onPointerDown={e => onPointerDown(idx, e)}
-                onPointerMove={e => onPointerMove(idx, e)}
-                onPointerUp={() => onPointerUp(idx)}
-                onPointerCancel={() => onPointerUp(idx)}
-              >
-                <span className="num">{idx + 1}</span>
-                <span className="nm">{chip.role}</span>
-              </div>
-            ))}
-          </div>
-          <div className="hint">Drag players to reposition</div>
-        </div>
       </div>
+
+      <RetroPitchStrategy
+        key={formation}
+        ref={pitchRef}
+        initialFormation={FORMATIONS[formation].players}
+      />
     </div>
   );
 }

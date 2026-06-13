@@ -8,7 +8,7 @@ export default function Footer() {
               <span className="mark">A</span>
               <b>AILYMPICS</b>
             </a>
-            <p>The on-chain sports management arena. Own teams, trade talent, set tactics, and wager across football and tennis.</p>
+            <p>The on-chain football management arena. Own clubs, trade talent, set tactics, and wager on every match.</p>
           </div>
 
           <div>

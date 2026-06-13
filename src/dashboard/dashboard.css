@@ -377,6 +377,40 @@
   white-space: nowrap;
 }
 
+/* Game history */
+.gh-badge {
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  display: grid;
+  place-items: center;
+  font-family: "Anton", sans-serif;
+  font-size: 13px;
+  flex-shrink: 0;
+}
+
+.gh-badge--win  { background: color-mix(in oklab, var(--lime) 18%, transparent); color: var(--lime); border: 1px solid color-mix(in oklab, var(--lime) 35%, transparent); }
+.gh-badge--loss { background: color-mix(in oklab, #ff7a7a 15%, transparent); color: #ff7a7a; border: 1px solid color-mix(in oklab, #ff7a7a 30%, transparent); }
+.gh-badge--draw { background: var(--surface); color: var(--muted); border: 1px solid var(--line); }
+
+.gh-score {
+  font-family: "Anton", sans-serif;
+  font-size: 14px;
+  color: var(--text);
+  min-width: 36px;
+  text-align: center;
+}
+
+.gh-date {
+  font-size: 11.5px;
+  color: var(--faint);
+  white-space: nowrap;
+}
+
+.act-amount.gh-neg {
+  color: #ff7a7a;
+}
+
 /* Empty state */
 .empty-state {
   display: flex;

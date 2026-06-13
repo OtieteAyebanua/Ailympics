@@ -11,23 +11,17 @@ import Training from './tabs/Training';
 import Wagers from './tabs/Wagers';
 import Leaderboard from './tabs/Leaderboard';
 import { type Player } from './data';
+import { useWallet } from '../hooks/useWallet';
 
 const TAB_TITLES: Record<TabId, string> = {
-  overview:     'Overview',
-  squad:        'My Squad',
-  marketplace:  'Marketplace',
-  strategy:     'Strategy Board',
-  training:     'Training Ground',
-  wagers:       'Wagers',
-  leaderboard:  'Leaderboard',
+  overview:    'Overview',
+  squad:       'My Squad',
+  marketplace: 'Marketplace',
+  strategy:    'Strategy Board',
+  training:    'Training Ground',
+  wagers:      'Wagers',
+  leaderboard: 'Leaderboard',
 };
-
-function genAddr() {
-  const h = '0123456789abcdef';
-  let a = '0x';
-  for (let i = 0; i < 4; i++) a += h[Math.floor(Math.random() * 16)];
-  return a + '…' + h[Math.floor(Math.random() * 16)] + h[Math.floor(Math.random() * 16)] + 'f2';
-}
 
 interface DashboardProps {
   onBack?: () => void;
@@ -35,8 +29,6 @@ interface DashboardProps {
 
 export default function Dashboard({ onBack }: DashboardProps) {
   const [activeTab, setActiveTab] = useState<TabId>('overview');
-  const [connected, setConnected] = useState(false);
-  const [walletAddr, setWalletAddr] = useState('');
   const [ownedPlayers, setOwnedPlayers] = useState<Player[]>([]);
   const [toastMsg, setToastMsg] = useState('');
   const [toastVisible, setToastVisible] = useState(false);
@@ -49,27 +41,15 @@ export default function Dashboard({ onBack }: DashboardProps) {
     toastTimer.current = setTimeout(() => setToastVisible(false), 2200);
   }, []);
 
-  const handleConnect = useCallback(() => {
-    if (!connected) {
-      setWalletAddr(genAddr());
-      setConnected(true);
-      showToast('Wallet connected');
-    } else {
-      setConnected(false);
-      setWalletAddr('');
-      showToast('Wallet disconnected');
-    }
-  }, [connected, showToast]);
-
-  const needWallet = useCallback((): boolean => {
-    if (!connected) { showToast('Connect a wallet first'); return false; }
-    return true;
-  }, [connected, showToast]);
+  const { connected, walletAddr, onCelo, networkName, toggleConnect, needWallet } =
+    useWallet(showToast);
 
   const ownedIds = new Set(ownedPlayers.map(p => p.id));
 
   const handleBuy = useCallback((player: Player) => {
-    setOwnedPlayers(prev => prev.some(p => p.id === player.id) ? prev : [...prev, player]);
+    setOwnedPlayers(prev =>
+      prev.some(p => p.id === player.id) ? prev : [...prev, player]
+    );
   }, []);
 
   const handleSell = useCallback((id: number) => {
@@ -102,19 +82,20 @@ export default function Dashboard({ onBack }: DashboardProps) {
         onTabChange={setActiveTab}
         connected={connected}
         walletAddr={walletAddr}
-        onConnect={handleConnect}
+        onConnect={toggleConnect}
       />
 
       <div className="dash-content">
         <header className="dash-header">
           <h1>{TAB_TITLES[activeTab]}</h1>
           <div className="dash-header-actions">
+            {connected && !onCelo && (
+              <span style={{ fontSize: 12, color: '#ff7a7a', fontWeight: 600 }}>
+                ⚠ Switch to Celo ({networkName})
+              </span>
+            )}
             {onBack && (
-              <button
-                className="q-btn"
-                onClick={onBack}
-                style={{ fontSize: 12 }}
-              >
+              <button className="q-btn" onClick={onBack} style={{ fontSize: 12 }}>
                 ← Back to site
               </button>
             )}

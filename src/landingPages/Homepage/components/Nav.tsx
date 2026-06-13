@@ -4,9 +4,10 @@ interface NavProps {
   connected: boolean;
   walletAddr: string;
   onConnect: () => void;
+  onLaunch?: () => void;
 }
 
-export default function Nav({ connected, walletAddr, onConnect }: NavProps) {
+export default function Nav({ connected, walletAddr, onConnect, onLaunch }: NavProps) {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
 
@@ -40,7 +41,7 @@ export default function Nav({ connected, walletAddr, onConnect }: NavProps) {
         </a>
 
         <div className="nav-cta">
-          <button className="btn btn-ghost btn-sm">Launch App</button>
+          <button className="btn btn-ghost btn-sm" onClick={onLaunch}>Launch App</button>
           <button
             className={`btn btn-primary btn-sm wallet-btn${connected ? ' connected' : ''}`}
             onClick={onConnect}

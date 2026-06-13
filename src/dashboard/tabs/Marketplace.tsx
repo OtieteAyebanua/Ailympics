@@ -9,7 +9,7 @@ interface MarketplaceProps {
   showToast: (msg: string) => void;
 }
 
-type SportFilter = 'all' | 'football' | 'tennis';
+type SportFilter = 'all' | 'football';
 
 export default function Marketplace({ ownedIds, onBuy, onSell, needWallet, showToast }: MarketplaceProps) {
   const [sport, setSport] = useState<SportFilter>('all');
@@ -37,7 +37,7 @@ export default function Marketplace({ ownedIds, onBuy, onSell, needWallet, showT
           Search players…
         </div>
         <div className="filter-pills">
-          {(['all', 'football', 'tennis'] as SportFilter[]).map(f => (
+          {(['all', 'football'] as SportFilter[]).map(f => (
             <button
               key={f}
               className={`filter-pill${sport === f ? ' active' : ''}`}

@@ -31,13 +31,6 @@ const matchData: Match[] = [
     odds: [2.1, 3.4, 2.8],
   },
   {
-    league: 'Grand Slam Series · Tennis',
-    live: true,
-    home: 'VLK', homeFull: 'A. Volkova',
-    away: 'RMS', awayFull: 'J. Ramos',
-    odds: [1.6, null, 2.3],
-  },
-  {
     league: 'Division 2 · Football',
     live: false,
     home: 'STR', homeFull: 'Storm City',

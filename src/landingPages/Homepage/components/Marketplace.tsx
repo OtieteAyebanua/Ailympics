@@ -22,17 +22,17 @@ interface Player {
 const players: Player[] = [
   { n: 'M. Okafor',   pos: 'ST · Football',      ovr: 88, rare: 'Legendary', price: '4.2', usd: '$11,340', stat1: 91, stat2: 88, stat3: 74, icon: false },
   { n: 'L. Sørensen', pos: 'CM · Football',       ovr: 84, rare: 'Epic',      price: '2.1', usd: '$5,670',  stat1: 79, stat2: 72, stat3: 90, icon: false },
-  { n: 'A. Volkova',  pos: 'Singles · Tennis',    ovr: 90, rare: 'Icon',      price: '6.8', usd: '$18,360', stat1: 88, stat2: 93, stat3: 85, icon: true  },
   { n: 'D. Mensah',   pos: 'CB · Football',       ovr: 82, rare: 'Rare',      price: '1.4', usd: '$3,780',  stat1: 75, stat2: 48, stat3: 78, icon: false },
+  { n: 'T. Osei',     pos: 'LW · Football',       ovr: 87, rare: 'Epic',      price: '3.5', usd: '$9,450',  stat1: 94, stat2: 82, stat3: 90, icon: false },
 ];
 
-function statLabels(pos: string): [string, string, string] {
-  return pos.includes('Tennis') ? ['ACE', 'RET', 'SRV'] : ['PAC', 'SHO', 'PAS'];
+function statLabels(): [string, string, string] {
+  return ['PAC', 'SHO', 'PAS'];
 }
 
 function PlayerCard({ player }: { player: Player; needWallet: () => boolean; showToast: (msg: string) => void }) {
   const [owned, setOwned] = useState(false);
-  const labels = statLabels(player.pos);
+  const labels = statLabels();
 
   return (
     <Reveal className="pcard">

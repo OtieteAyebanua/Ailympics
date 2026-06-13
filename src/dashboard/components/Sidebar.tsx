@@ -127,13 +127,32 @@ export default function Sidebar({ activeTab, onTabChange, connected, walletAddr,
       </nav>
 
       <div className="sb-footer">
-        <button className="wallet-chip" onClick={onConnect}>
-          <span className={`wc-dot${connected ? '' : ' off'}`} />
-          <div className="wc-info">
-            <span className="wc-label">{connected ? 'Connected' : 'Wallet'}</span>
-            <span className="wc-addr">{connected ? walletAddr : 'Connect wallet'}</span>
+        {connected ? (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 6, width: '100%' }}>
+            <div className="wallet-chip" style={{ cursor: 'default' }}>
+              <span className="wc-dot" />
+              <div className="wc-info">
+                <span className="wc-label">Connected · Celo</span>
+                <span className="wc-addr">{walletAddr}</span>
+              </div>
+            </div>
+            <button
+              className="q-btn"
+              onClick={onConnect}
+              style={{ width: '100%', justifyContent: 'center', fontSize: 12, opacity: 0.8 }}
+            >
+              Disconnect
+            </button>
           </div>
-        </button>
+        ) : (
+          <button className="wallet-chip" onClick={onConnect}>
+            <span className="wc-dot off" />
+            <div className="wc-info">
+              <span className="wc-label">Wallet</span>
+              <span className="wc-addr">Connect wallet</span>
+            </div>
+          </button>
+        )}
       </div>
     </aside>
   );

@@ -1,0 +1,386 @@
+@import url("https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap");
+
+.rp-root {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  image-rendering: pixelated;
+  font-family: "Press Start 2P", monospace;
+}
+
+/* ── Scoreboard ────────────────────────────────────── */
+.rp-board {
+  width: min(620px, 100%);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #0c1018;
+  border: 3px solid #1c2b3a;
+  padding: 14px 18px;
+  box-shadow:
+    0 0 0 3px #000,
+    0 0 22px rgba(33, 212, 255, 0.18);
+}
+.rp-team {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 11px;
+  color: #ccffee;
+}
+.rp-swatch {
+  width: 14px;
+  height: 14px;
+  border: 2px solid #000;
+  flex-shrink: 0;
+}
+.rp-sw-home {
+  background: #21d4ff;
+}
+.rp-sw-away {
+  background: #ff4d5e;
+}
+.rp-mid {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.rp-score {
+  font-size: 22px;
+  color: #fff;
+  letter-spacing: 2px;
+  text-shadow: 2px 2px 0 #000;
+}
+.rp-clock {
+  font-size: 9px;
+  color: #21d4ff;
+  margin-top: 6px;
+}
+
+/* ── Pitch ─────────────────────────────────────────── */
+.rp-pitch-wrap {
+  position: relative;
+  width: 100%;
+}
+.rp-pitch {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 5 / 7;
+  border: 4px solid #0c1018;
+  box-shadow:
+    0 0 0 4px #000,
+    0 8px 30px rgba(0, 0, 0, 0.6);
+  overflow: hidden;
+  background: repeating-linear-gradient(
+    to bottom,
+    #2f8f3e 0 7.14%,
+    #2a8237 7.14% 14.28%
+  );
+}
+
+/* ── Field markings ────────────────────────────────── */
+.rp-mark {
+  position: absolute;
+  border: 3px solid rgba(234, 246, 238, 0.92);
+}
+.rp-halfway {
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: 0;
+  border: none;
+  border-top: 3px solid rgba(234, 246, 238, 0.92);
+}
+.rp-center {
+  left: 50%;
+  top: 50%;
+  width: 22%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+}
+.rp-spot {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 6px;
+  height: 6px;
+  background: rgba(234, 246, 238, 0.92);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+}
+.rp-box-top {
+  left: 25%;
+  width: 50%;
+  top: 0;
+  height: 16%;
+  border-top: none;
+}
+.rp-box-bot {
+  left: 25%;
+  width: 50%;
+  bottom: 0;
+  height: 16%;
+  border-bottom: none;
+}
+.rp-sixbox-top {
+  left: 36%;
+  width: 28%;
+  top: 0;
+  height: 7%;
+  border-top: none;
+}
+.rp-sixbox-bot {
+  left: 36%;
+  width: 28%;
+  bottom: 0;
+  height: 7%;
+  border-bottom: none;
+}
+.rp-goal-top {
+  position: absolute;
+  left: 43%;
+  width: 14%;
+  top: 0;
+  height: 3%;
+  background: rgba(255, 255, 255, 0.2);
+  border: 3px solid rgba(234, 246, 238, 0.9);
+  border-top: none;
+}
+.rp-goal-bot {
+  position: absolute;
+  left: 43%;
+  width: 14%;
+  bottom: 0;
+  height: 3%;
+  background: rgba(255, 255, 255, 0.2);
+  border: 3px solid rgba(234, 246, 238, 0.9);
+  border-bottom: none;
+}
+
+/* ── Player sprites ────────────────────────────────── */
+.rp-player {
+  position: absolute;
+  width: 30px;
+  height: 34px;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  user-select: none;
+}
+.rp-shadow {
+  position: absolute;
+  bottom: -3px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 20px;
+  height: 7px;
+  background: rgba(0, 0, 0, 0.35);
+  border-radius: 50%;
+}
+.rp-sprite {
+  position: relative;
+  width: 24px;
+  height: 30px;
+}
+.rp-px {
+  position: absolute;
+  image-rendering: pixelated;
+}
+.rp-head {
+  width: 10px;
+  height: 8px;
+  left: 7px;
+  top: 0;
+  background: #f1c79b;
+  box-shadow: 0 0 0 2px #000;
+}
+.rp-hair {
+  width: 10px;
+  height: 3px;
+  left: 7px;
+  top: -1px;
+  background: #3a2a1a;
+}
+.rp-torso {
+  width: 16px;
+  height: 12px;
+  left: 4px;
+  top: 9px;
+  box-shadow: 0 0 0 2px #000;
+}
+.rp-legs {
+  width: 14px;
+  height: 7px;
+  left: 5px;
+  top: 21px;
+  background: #222;
+  box-shadow: 0 0 0 2px #000;
+}
+.rp-num {
+  position: absolute;
+  width: 100%;
+  top: 11px;
+  text-align: center;
+  font-size: 6px;
+  color: #fff;
+  text-shadow: 1px 1px 0 #000;
+  z-index: 2;
+}
+.rp-home .rp-torso {
+  background: #21d4ff;
+}
+.rp-away .rp-torso {
+  background: #ff4d5e;
+}
+
+/* ghost = faded away-team reference in strategy view */
+.rp-ghost {
+  opacity: 0.35;
+  pointer-events: none;
+}
+
+/* ── Ball ──────────────────────────────────────────── */
+.rp-ball {
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #fff 55%, #b9c4cc 100%);
+  box-shadow:
+    0 0 0 2px #000,
+    0 0 8px rgba(255, 255, 255, 0.5);
+  transform: translate(-50%, -50%);
+  z-index: 5;
+  animation: rp-ballpulse 1.4s ease-in-out infinite;
+}
+@keyframes rp-ballpulse {
+  0%,
+  100% {
+    transform: translate(-50%, -50%) scale(1);
+  }
+  50% {
+    transform: translate(-50%, -55%) scale(1.08);
+  }
+}
+
+/* ── CRT ───────────────────────────────────────────── */
+.rp-scan {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 8;
+  background: repeating-linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0.18) 0 1px,
+    transparent 1px 3px
+  );
+  mix-blend-mode: multiply;
+}
+.rp-vignette {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 7;
+  box-shadow: inset 0 0 70px rgba(0, 0, 0, 0.55);
+}
+
+/* ── Animations ────────────────────────────────────── */
+.rp-bob {
+  animation: rp-bob 1.8s ease-in-out infinite;
+}
+@keyframes rp-bob {
+  0%,
+  100% {
+    transform: translate(-50%, -50%) translateY(0px);
+  }
+  50% {
+    transform: translate(-50%, -50%) translateY(-2px);
+  }
+}
+
+/* ── Strategy toolbar ──────────────────────────────── */
+.rp-strat-toolbar {
+  width: min(620px, 100%);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 2px;
+}
+.rp-formation-label {
+  font-size: 9px;
+  color: #21d4ff;
+  letter-spacing: 1px;
+}
+.rp-hint {
+  font-size: 7px;
+  color: #56627a;
+  margin-top: 5px;
+}
+.rp-reset-btn {
+  font-family: "Press Start 2P", monospace;
+  font-size: 8px;
+  background: #0c1018;
+  color: #ccffee;
+  border: 2px solid #1c2b3a;
+  padding: 8px 14px;
+  cursor: pointer;
+  box-shadow: 0 0 0 2px #000;
+  line-height: 1;
+}
+.rp-reset-btn:hover {
+  background: #1c2b3a;
+  color: #21d4ff;
+}
+
+/* ── Draggable players ─────────────────────────────── */
+.rp-draggable {
+  cursor: grab;
+  touch-action: none;
+}
+.rp-draggable:hover {
+  filter: brightness(1.35);
+}
+.rp-dragging {
+  cursor: grabbing;
+  filter: brightness(1.6) drop-shadow(0 0 7px rgba(33, 212, 255, 0.7));
+  z-index: 20 !important;
+  animation: none !important;
+  transform: translate(-50%, -50%) scale(1.1) !important;
+}
+
+/* ── Resize handle ─────────────────────────────────── */
+.rp-resize-handle {
+  position: absolute;
+  bottom: 6px;
+  right: 6px;
+  width: 16px;
+  height: 16px;
+  cursor: se-resize;
+  z-index: 20;
+  border-right: 3px solid rgba(255, 255, 255, 0.35);
+  border-bottom: 3px solid rgba(255, 255, 255, 0.35);
+  border-radius: 0 0 3px 0;
+  transition: border-color 0.15s;
+  touch-action: none;
+}
+.rp-resize-handle:hover {
+  border-color: rgba(255, 255, 255, 0.8);
+}
+
+/* ── Caption ───────────────────────────────────────── */
+.rp-caption {
+  font-size: 8px;
+  color: #56627a;
+  text-align: center;
+  line-height: 1.9;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rp-ball,
+  .rp-bob {
+    animation: none !important;
+  }
+}

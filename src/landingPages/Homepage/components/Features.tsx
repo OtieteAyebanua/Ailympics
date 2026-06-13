@@ -21,7 +21,7 @@ export default function Features() {
               </svg>
             </div>
             <h3>Buy &amp; sell players</h3>
-            <p>Trade footballers and tennis pros as tokenized assets on an open marketplace. Prices move with form and demand.</p>
+            <p>Trade footballers as tokenized assets on an open marketplace. Prices move with form and demand.</p>
             <span className="tag">Marketplace</span>
           </Reveal>
 
