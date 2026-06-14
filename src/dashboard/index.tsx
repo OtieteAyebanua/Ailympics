@@ -85,7 +85,7 @@ export default function Dashboard() {
       case 'leaderboard':
         return <Leaderboard />;
       case 'matches':
-        return <Matches onTabChange={setActiveTab} showToast={showToast} />;
+        return <Matches />;
     }
   };
 

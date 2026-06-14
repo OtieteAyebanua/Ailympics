@@ -1,6 +1,8 @@
+import { useState, useEffect } from 'react';
 import { type TabId } from '../components/Sidebar';
 import { type SquadState } from '../../hooks/useSquad';
-import { gameHistory } from '../data';
+import { listMyMatches, type DbSimMatch } from '../../lib/matchRoom';
+import { getSessionWallet } from '../../lib/auth';
 
 interface OverviewProps {
   squad:       SquadState;
@@ -8,22 +10,50 @@ interface OverviewProps {
   connected:   boolean;
 }
 
+function resultOf(m: DbSimMatch, wallet: string | null) {
+  const isHome = m.home_wallet === wallet;
+  const my  = isHome ? m.home_score : m.away_score;
+  const opp = isHome ? m.away_score : m.home_score;
+  if (my > opp) return 'W';
+  if (my < opp) return 'L';
+  return 'D';
+}
+
+function oppLabel(m: DbSimMatch, wallet: string | null) {
+  const opp = m.home_wallet === wallet ? m.away_wallet : m.home_wallet;
+  if (!opp) return 'AI';
+  return `${opp.slice(0, 6)}…${opp.slice(-4)}`;
+}
+
+function fmtDate(iso: string) {
+  return new Date(iso).toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+}
+
 export default function Overview({ squad, onTabChange, connected }: OverviewProps) {
   const { players, count, limit, trainingPoints } = squad;
+  const wallet = getSessionWallet();
+
+  const [matches,  setMatches]  = useState<DbSimMatch[]>([]);
+  const [loadingM, setLoadingM] = useState(true);
+
+  useEffect(() => {
+    listMyMatches(20).then(m => { setMatches(m); setLoadingM(false); });
+  }, []);
 
   const portfolioValue = players
     .filter(p => p.is_nft)
     .reduce((acc, p) => acc + p.price_eth, 0)
     .toFixed(2);
 
-  const wins  = gameHistory.filter(g => g.result === 'W').length;
-  const losses = gameHistory.filter(g => g.result === 'L').length;
-  const draws  = gameHistory.filter(g => g.result === 'D').length;
+  const finished = matches.filter(m => m.status === 'finished');
+  const wins   = finished.filter(m => resultOf(m, wallet) === 'W').length;
+  const losses = finished.filter(m => resultOf(m, wallet) === 'L').length;
+  const draws  = finished.filter(m => resultOf(m, wallet) === 'D').length;
 
   return (
     <div>
       <div className="tab-section">
-        <div className="tab-title">Season 1 — Week 4</div>
+        <div className="tab-title">Season 1 — Overview</div>
         <div className="stat-grid">
           <div className="stat-card">
             <div className="sc-label">
@@ -77,7 +107,7 @@ export default function Overview({ squad, onTabChange, connected }: OverviewProp
               {' '}{losses}<span className="sc-unit" style={{ fontSize: 14, color: '#ff7a7a' }}>L</span>
               {' '}{draws}<span className="sc-unit" style={{ fontSize: 14, color: 'var(--faint)' }}>D</span>
             </div>
-            <div className="sc-sub">{gameHistory.length} games played</div>
+            <div className="sc-sub">{finished.length} match{finished.length !== 1 ? 'es' : ''} played</div>
           </div>
         </div>
       </div>
@@ -107,7 +137,7 @@ export default function Overview({ squad, onTabChange, connected }: OverviewProp
             <svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
               <circle cx={12} cy={12} r={10} /><polygon points="10,8 16,12 10,16" />
             </svg>
-            Live Matches
+            Play Match
           </button>
         </div>
       </div>
@@ -119,32 +149,48 @@ export default function Overview({ squad, onTabChange, connected }: OverviewProp
               <circle cx={12} cy={12} r={10} /><path d="M12 8v4M12 16h.01" />
             </svg>
             <span style={{ fontSize: 14, color: 'var(--muted)' }}>
-              Connect your wallet to buy players, place wagers, and track your season.
+              Connect your wallet to buy players, play matches, and track your season.
             </span>
           </div>
         </div>
       )}
 
       <div className="tab-section">
-        <div className="tab-title">Game History</div>
-        <div className="activity-feed">
-          {gameHistory.map(g => (
-            <div key={g.id} className="activity-row">
-              <div className={`gh-badge gh-badge--${g.result === 'W' ? 'win' : g.result === 'L' ? 'loss' : 'draw'}`}>
-                {g.result}
-              </div>
-              <div className="act-text">
-                <b>{g.opponent}</b>
-                <span>{g.league}</span>
-              </div>
-              <div className="gh-score">{g.score}</div>
-              <div className="gh-date">{g.date}</div>
-              <div className={`act-amount ${g.earnings.startsWith('−') ? 'gh-neg' : ''}`}>
-                {g.earnings}
-              </div>
-            </div>
-          ))}
-        </div>
+        <div className="tab-title">Match History</div>
+
+        {loadingM ? (
+          <div style={{ color: 'var(--muted)', fontSize: 14, padding: '16px 0' }}>Loading…</div>
+        ) : finished.length === 0 ? (
+          <div style={{ color: 'var(--muted)', fontSize: 14, padding: '16px 0' }}>
+            No matches yet — head to{' '}
+            <button
+              style={{ background: 'none', border: 'none', color: 'var(--accent)', cursor: 'pointer', fontSize: 14, padding: 0, textDecoration: 'underline' }}
+              onClick={() => onTabChange('matches')}
+            >
+              Matches
+            </button>
+            {' '}to play your first.
+          </div>
+        ) : (
+          <div className="activity-feed">
+            {finished.slice(0, 8).map(m => {
+              const result = resultOf(m, wallet);
+              return (
+                <div key={m.id} className="activity-row">
+                  <div className={`gh-badge gh-badge--${result === 'W' ? 'win' : result === 'L' ? 'loss' : 'draw'}`}>
+                    {result}
+                  </div>
+                  <div className="act-text">
+                    <b>vs {oppLabel(m, wallet)}</b>
+                    <span>AIlympics 5v5</span>
+                  </div>
+                  <div className="gh-score">{m.home_score} – {m.away_score}</div>
+                  <div className="gh-date">{fmtDate(m.finished_at ?? m.created_at)}</div>
+                </div>
+              );
+            })}
+          </div>
+        )}
       </div>
     </div>
   );

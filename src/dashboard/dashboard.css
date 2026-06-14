@@ -1,4 +1,4 @@
-/* ============ Dashboard Layout ============ */
+it/* ============ Dashboard Layout ============ */
 .dash-layout {
   display: flex;
   min-height: 100vh;
@@ -519,6 +519,72 @@
   border-bottom: 1px solid var(--line-soft);
   gap: 12px;
   flex-wrap: wrap;
+}
+
+/* ============ Strategy selectors ============ */
+.strat-options-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+
+.strat-selector {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.strat-selector-label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--faint);
+}
+
+.strat-selector-options {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.strat-option {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  padding: 10px 14px;
+  border-radius: 10px;
+  border: 1px solid var(--line-soft);
+  background: var(--bg-2);
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  text-align: left;
+  transition: border-color .15s, background .15s, color .15s;
+}
+
+.strat-option:hover {
+  border-color: var(--line);
+  color: var(--text);
+}
+
+.strat-option.active {
+  border-color: var(--accent);
+  background: color-mix(in oklab, var(--accent) 10%, var(--bg-2));
+  color: var(--text);
+}
+
+.strat-option-desc {
+  font-size: 11px;
+  font-weight: 400;
+  color: var(--muted);
+  line-height: 1.4;
+}
+
+@media (max-width: 860px) {
+  .strat-options-grid { grid-template-columns: 1fr; }
 }
 
 /* ============ Training tab ============ */

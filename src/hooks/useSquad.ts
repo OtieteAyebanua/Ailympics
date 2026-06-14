@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useAccount } from 'wagmi';
-import { type OwnedPlayer } from '../models/models';
+import { type OwnedPlayer, type StatLabel } from '../models/models';
 import { getUserSquad, getSquadInfo, releasePlayer } from '../lib/squad';
 import { clonePlayer } from '../lib/marketplace';
 import { getTrainingPoints } from '../lib/training';
@@ -16,6 +16,7 @@ export interface SquadState {
   release:        (userPlayerId: string) => Promise<string | null>;
   refreshPoints:  () => Promise<void>;
   refresh:        () => Promise<void>;
+  applyGains:     (playerId: number, gains: Partial<Record<StatLabel, number>>) => void;
 }
 
 export function useSquad(): SquadState {
@@ -70,6 +71,20 @@ export function useSquad(): SquadState {
     setTrainingPoints(pts);
   }, []);
 
+  const applyGains = useCallback((
+    playerId: number,
+    gains: Partial<Record<StatLabel, number>>,
+  ) => {
+    setPlayers(prev => prev.map(p => {
+      if (p.id !== playerId) return p;
+      const updatedBoosts = { ...p.boosts };
+      for (const [stat, gain] of Object.entries(gains) as [StatLabel, number][]) {
+        updatedBoosts[stat] = Math.min(99, (updatedBoosts[stat] ?? 0) + gain);
+      }
+      return { ...p, boosts: updatedBoosts };
+    }));
+  }, []);
+
   return {
     players,
     count,
@@ -80,5 +95,6 @@ export function useSquad(): SquadState {
     release,
     refreshPoints,
     refresh: load,
+    applyGains,
   };
 }

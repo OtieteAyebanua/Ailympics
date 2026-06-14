@@ -46,7 +46,7 @@ export async function runTrainingSession(
 
   if (ownerErr || !ownership) throw new Error('Player not found in your squad');
 
-  const player = ownership.players as { is_trainable: boolean; is_nft: boolean } | null;
+  const player = ownership.players as unknown as { is_trainable: boolean; is_nft: boolean } | null;
   if (!player?.is_trainable) throw new Error('NFT players cannot be trained');
 
   // 2. Check training points
@@ -129,14 +129,8 @@ export async function getTrainingHistory(playerId: number) {
 // ── Internals ─────────────────────────────────────────────────────────────────
 
 /**
- * Rolls for stat improvements.
- * More points allocated to a stat = higher chance and larger max boost.
- *
- * Tiers:
- *   pts >= 40 → 85% chance, +1–4
- *   pts >= 20 → 70% chance, +1–3
- *   pts >= 10 → 50% chance, +1–2
- *   pts  < 10 → 30% chance, +1
+ * Calculates guaranteed stat gains: every 15 points allocated to a stat = +1.
+ * e.g. 15 pts → +1, 30 pts → +2, 44 pts → +2 (floor division, no RNG).
  */
 function rollGains(allocations: Partial<Record<StatLabel, number>>): {
   improved: boolean;
@@ -148,11 +142,9 @@ function rollGains(allocations: Partial<Record<StatLabel, number>>): {
 
   for (const [stat, pts] of Object.entries(allocations) as [StatLabel, number][]) {
     if (!pts || pts <= 0) continue;
-
-    const { chance, maxBoost } = outcomeFor(pts);
-    if (Math.random() < chance) {
-      const boost = 1 + Math.floor(Math.random() * maxBoost);
-      gains[stat] = boost;
+    const gain = Math.floor(pts / 15);
+    if (gain > 0) {
+      gains[stat as StatLabel] = gain;
       improved = true;
     }
   }
@@ -161,13 +153,6 @@ function rollGains(allocations: Partial<Record<StatLabel, number>>): {
   const costEth  = parseFloat((0.2 + totalPts * 0.003).toFixed(4));
 
   return { improved, gains, costEth };
-}
-
-function outcomeFor(pts: number): { chance: number; maxBoost: number } {
-  if (pts >= 40) return { chance: 0.85, maxBoost: 4 };
-  if (pts >= 20) return { chance: 0.70, maxBoost: 3 };
-  if (pts >= 10) return { chance: 0.50, maxBoost: 2 };
-  return            { chance: 0.30, maxBoost: 1 };
 }
 
 /**

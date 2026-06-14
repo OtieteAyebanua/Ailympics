@@ -144,7 +144,7 @@ export async function releasePlayer(userPlayerId: string): Promise<string | null
 
   if (fetchErr || !row) return 'Player not found in your squad';
 
-  const player = row.players as { is_nft: boolean } | null;
+  const player = row.players as unknown as { is_nft: boolean } | null;
   if (player?.is_nft) return 'NFT players cannot be released — sell them on the marketplace instead';
 
   // Soft-delete

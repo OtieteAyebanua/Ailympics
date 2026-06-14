@@ -1,7 +1,15 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { type TabId } from '../components/Sidebar';
 import { type SquadState } from '../../hooks/useSquad';
 import { getEffectiveStats } from '../../lib/playerUtils';
+import { getSessionWallet } from '../../lib/auth';
+
+const LINEUP_KEY = () => `ailympics_starting5_${getSessionWallet() ?? 'guest'}`;
+
+export function getStoredLineup(): number[] {
+  try { return JSON.parse(localStorage.getItem(LINEUP_KEY()) ?? '[]'); }
+  catch { return []; }
+}
 
 interface SquadProps {
   squad:       SquadState;
@@ -12,6 +20,29 @@ interface SquadProps {
 export default function Squad({ squad, onTabChange, showToast }: SquadProps) {
   const { players, release } = squad;
   const [releasing, setReleasing] = useState<string | null>(null);
+  const [selected, setSelected] = useState<Set<number>>(() => new Set(getStoredLineup()));
+
+  // Re-sync when wallet changes
+  useEffect(() => {
+    setSelected(new Set(getStoredLineup()));
+  }, []);
+
+  const toggleSelect = (playerId: number) => {
+    setSelected(prev => {
+      const next = new Set(prev);
+      if (next.has(playerId)) {
+        next.delete(playerId);
+      } else {
+        if (next.size >= 5) {
+          showToast('Starting lineup is full — remove a player first');
+          return prev;
+        }
+        next.add(playerId);
+      }
+      localStorage.setItem(LINEUP_KEY(), JSON.stringify([...next]));
+      return next;
+    });
+  };
 
   const handleRelease = async (userPlayerId: string, name: string) => {
     setReleasing(userPlayerId);
@@ -27,8 +58,13 @@ export default function Squad({ squad, onTabChange, showToast }: SquadProps) {
   return (
     <div>
       <div className="tab-toolbar">
-        <div style={{ fontSize: 13, color: 'var(--muted)' }}>
-          {players.length} player{players.length !== 1 ? 's' : ''}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+          <div style={{ fontSize: 13, color: 'var(--muted)' }}>
+            {players.length} player{players.length !== 1 ? 's' : ''}
+          </div>
+          <div style={{ fontSize: 11, color: selected.size === 5 ? 'var(--accent)' : 'var(--faint)' }}>
+            Starting lineup: {selected.size}/5
+          </div>
         </div>
         <button className="q-btn primary" onClick={() => onTabChange('marketplace')}>
           <svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5}>
@@ -58,9 +94,34 @@ export default function Squad({ squad, onTabChange, showToast }: SquadProps) {
           {players.map(p => {
             const stats = getEffectiveStats(p);
             const isReleasing = releasing === p.ownership.id;
+            const isSelected = selected.has(p.id);
 
             return (
-              <div key={p.ownership.id} className="pcard">
+              <div
+                key={p.ownership.id}
+                className="pcard"
+                style={{ outline: isSelected ? '2px solid var(--accent)' : undefined, position: 'relative' }}
+              >
+                {/* Starting lineup toggle */}
+                <button
+                  onClick={() => toggleSelect(p.id)}
+                  title={isSelected ? 'Remove from starting lineup' : 'Add to starting lineup'}
+                  style={{
+                    position: 'absolute', top: 8, right: 8, zIndex: 5,
+                    width: 24, height: 24, borderRadius: '50%',
+                    border: `2px solid ${isSelected ? 'var(--accent)' : 'rgba(255,255,255,0.2)'}`,
+                    background: isSelected ? 'var(--accent)' : 'rgba(0,0,0,0.4)',
+                    cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    padding: 0, transition: 'all 0.15s',
+                  }}
+                >
+                  {isSelected && (
+                    <svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="#000" strokeWidth={3}>
+                      <polyline points="20 6 9 17 4 12" />
+                    </svg>
+                  )}
+                </button>
+
                 <div className="ph">
                   <span className={`rare${p.is_icon ? ' icon' : ''}`}>{p.rarity}</span>
                   <span className="ovr">{p.base_ovr}</span>

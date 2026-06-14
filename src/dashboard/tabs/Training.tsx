@@ -49,11 +49,11 @@ function TrainingModal({ player, availablePoints, onStart, onClose }: ModalProps
     });
   };
 
-  function chanceLabel(pts: number): string {
-    if (pts >= 40) return '85% · +1–4';
-    if (pts >= 20) return '70% · +1–3';
-    if (pts >= 10) return '50% · +1–2';
-    return '30% · +1';
+  function gainLabel(pts: number): string {
+    const gain = Math.floor(pts / 15);
+    if (gain > 0) return `+${gain} guaranteed`;
+    const needed = 15 - pts;
+    return `${needed} more pts for +1`;
   }
 
   return (
@@ -97,7 +97,7 @@ function TrainingModal({ player, availablePoints, onStart, onClose }: ModalProps
                   <div style={{ fontSize: 13, fontWeight: 600 }}>{s.label}</div>
                   <div style={{ fontSize: 11, color: 'var(--muted)', marginTop: 2 }}>
                     Current: {s.val}
-                    {pts > 0 && <span style={{ color: 'var(--accent)', marginLeft: 6 }}>{chanceLabel(pts)}</span>}
+                    {pts > 0 && <span style={{ color: Math.floor(pts / 15) > 0 ? 'var(--accent)' : 'var(--muted)', marginLeft: 6 }}>{gainLabel(pts)}</span>}
                   </div>
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
@@ -212,6 +212,7 @@ export default function Training({ squad, needWallet, showToast }: TrainingProps
       const result: TrainingResult = await runTrainingSession(player.id, alloc);
       await refreshPoints();
       if (result.improved) {
+        squad.applyGains(player.id, result.gains);
         const gains = Object.entries(result.gains)
           .map(([stat, val]) => `${stat} +${val}`)
           .join(', ');

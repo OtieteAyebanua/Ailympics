@@ -12,6 +12,16 @@ dist
 dist-ssr
 *.local
 
+# Env files (keep .env.example tracked)
+.env
+.env.*
+!.env.example
+
+# Local scratch / experiment files
+patch.js
+test*.js
+test*.mjs
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

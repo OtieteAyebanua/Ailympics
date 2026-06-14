@@ -1,276 +1,181 @@
-import { useState } from 'react';
-import { matches, type MatchData } from '../data';
-import RetroPitch from '../components/RetroPitch';
-import { type TabId } from '../components/Sidebar';
+import { useState, useEffect } from 'react';
+import MatchViewer from '../components/MatchViewer';
+import { listMyMatches, type DbSimMatch } from '../../lib/matchRoom';
+import { getSessionWallet } from '../../lib/auth';
 
-type Filter = 'all' | 'live' | 'upcoming';
-
-interface MatchesProps {
-  onTabChange: (tab: TabId) => void;
-  showToast: (msg: string) => void;
+function resultOf(m: DbSimMatch, myWallet: string | null) {
+  const isHome = m.home_wallet === myWallet;
+  const my  = isHome ? m.home_score : m.away_score;
+  const opp = isHome ? m.away_score : m.home_score;
+  if (my > opp)  return 'W';
+  if (my < opp)  return 'L';
+  return 'D';
 }
 
-function ScoreDisplay({ match }: { match: MatchData }) {
-  if (!match.score) return null;
-  return (
-    <div style={{ textAlign: 'center' }}>
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 12 }}>
-        <span style={{ fontSize: 13, color: 'var(--muted)', minWidth: 80, textAlign: 'right' }}>{match.homeFull}</span>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <span style={{ fontSize: 36, fontWeight: 800, color: 'var(--fg)', fontVariantNumeric: 'tabular-nums', lineHeight: 1 }}>
-            {match.score.home}
-          </span>
-          <span style={{ fontSize: 22, color: 'var(--faint)', lineHeight: 1 }}>–</span>
-          <span style={{ fontSize: 36, fontWeight: 800, color: 'var(--fg)', fontVariantNumeric: 'tabular-nums', lineHeight: 1 }}>
-            {match.score.away}
-          </span>
-        </div>
-        <span style={{ fontSize: 13, color: 'var(--muted)', minWidth: 80, textAlign: 'left' }}>{match.awayFull}</span>
-      </div>
-      {match.minute !== undefined && (
-        <div style={{ fontSize: 11, color: '#ff4d4d', fontWeight: 700, marginTop: 4 }}>
-          {match.minute}'
-        </div>
-      )}
-    </div>
-  );
+function oppLabel(m: DbSimMatch, myWallet: string | null) {
+  const opp = m.home_wallet === myWallet ? m.away_wallet : m.home_wallet;
+  if (!opp) return 'AI';
+  return `${opp.slice(0, 6)}…${opp.slice(-4)}`;
 }
 
-function MatchModal({ match, onTabChange, onClose }: { match: MatchData; onTabChange: (tab: TabId) => void; onClose: () => void }) {
-  return (
-    <div
-      style={{
-        position: 'fixed', inset: 0, zIndex: 9000,
-        background: 'rgba(0,0,0,0.75)',
-        display: 'flex', alignItems: 'center', justifyContent: 'center',
-        backdropFilter: 'blur(5px)',
-      }}
-      onClick={onClose}
-    >
-      <div
-        style={{
-          background: 'var(--bg-2)',
-          border: '1px solid var(--line)',
-          borderRadius: 16,
-          padding: '24px',
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          gap: 16,
-          maxWidth: 460,
-          width: '92vw',
-        }}
-        onClick={e => e.stopPropagation()}
-      >
-        {/* header */}
-        <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', width: '100%' }}>
-          <div>
-            <div style={{ fontSize: 11, color: 'var(--muted)', marginBottom: 4 }}>{match.league}</div>
-            {!match.score && (
-              <div style={{ fontSize: 15, fontWeight: 700, color: 'var(--fg)' }}>
-                {match.homeFull}
-                <span style={{ color: 'var(--faint)', fontWeight: 400, margin: '0 8px' }}>vs</span>
-                {match.awayFull}
-              </div>
-            )}
-          </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
-            {match.live ? (
-              <span style={{ fontSize: 10, background: '#ff4d4d', color: '#fff', padding: '3px 8px', borderRadius: 4, fontWeight: 700 }}>
-                LIVE
-              </span>
-            ) : match.kickoff ? (
-              <span style={{ fontSize: 10, color: 'var(--muted)', background: 'var(--bg-1)', border: '1px solid var(--line)', padding: '3px 8px', borderRadius: 4 }}>
-                {match.kickoff}
-              </span>
-            ) : null}
-            <button
-              onClick={onClose}
-              style={{ background: 'none', border: 'none', color: 'var(--muted)', cursor: 'pointer', fontSize: 18, lineHeight: 1, padding: 4 }}
-            >
-              ✕
-            </button>
-          </div>
-        </div>
-
-        {/* live score */}
-        {match.score && <ScoreDisplay match={match} />}
-
-        <RetroPitch defaultWidth={340} />
-
-        <button
-          className="q-btn primary"
-          style={{ width: '100%', justifyContent: 'center', fontSize: 14, padding: '12px 0' }}
-          onClick={() => { onClose(); onTabChange('wagers'); }}
-        >
-          <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
-            <rect x={2} y={2} width={20} height={20} rx={4} />
-            <circle cx={8} cy={8} r={1.5} fill="currentColor" /><circle cx={16} cy={8} r={1.5} fill="currentColor" />
-            <circle cx={8} cy={16} r={1.5} fill="currentColor" /><circle cx={16} cy={16} r={1.5} fill="currentColor" />
-            <circle cx={12} cy={12} r={1.5} fill="currentColor" />
-          </svg>
-          Wager on this match
-        </button>
-      </div>
-    </div>
-  );
-}
-
-function MatchCard({ match, onWatch, onWager }: { match: MatchData; onWatch: () => void; onWager: () => void }) {
-  return (
-    <div
-      style={{
-        background: 'var(--bg-1)',
-        border: '1px solid var(--line)',
-        borderRadius: 14,
-        overflow: 'hidden',
-        display: 'flex',
-        flexDirection: 'column',
-      }}
-    >
-      {/* pitch preview — non-interactive crop */}
-      <div
-        style={{
-          height: 190,
-          overflow: 'hidden',
-          pointerEvents: 'none',
-          display: 'flex',
-          alignItems: 'flex-start',
-          justifyContent: 'center',
-          background: '#1a2a1a',
-        }}
-      >
-        <RetroPitch defaultWidth={300} />
-      </div>
-
-      {/* card body */}
-      <div style={{ padding: '14px 16px', display: 'flex', flexDirection: 'column', gap: 10 }}>
-        {/* league + status */}
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <span style={{ fontSize: 11, color: 'var(--muted)' }}>{match.league}</span>
-          {match.live ? (
-            <span style={{ fontSize: 10, background: '#ff4d4d22', color: '#ff4d4d', border: '1px solid #ff4d4d55', padding: '2px 7px', borderRadius: 4, fontWeight: 700 }}>
-              ● LIVE {match.minute !== undefined ? `${match.minute}'` : ''}
-            </span>
-          ) : (
-            <span style={{ fontSize: 10, color: 'var(--faint)', background: 'var(--bg-2)', border: '1px solid var(--line)', padding: '2px 7px', borderRadius: 4 }}>
-              {match.kickoff ?? 'Upcoming'}
-            </span>
-          )}
-        </div>
-
-        {/* score or team names */}
-        {match.score ? (
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}>
-            <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--fg)', flex: 1 }}>{match.homeFull}</span>
-            <span style={{ fontSize: 24, fontWeight: 800, color: 'var(--fg)', fontVariantNumeric: 'tabular-nums', letterSpacing: 2 }}>
-              {match.score.home} – {match.score.away}
-            </span>
-            <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--fg)', flex: 1, textAlign: 'right' }}>{match.awayFull}</span>
-          </div>
-        ) : (
-          <div style={{ fontSize: 15, fontWeight: 700, color: 'var(--fg)' }}>
-            {match.homeFull}
-            <span style={{ color: 'var(--faint)', fontWeight: 400, margin: '0 6px' }}>vs</span>
-            {match.awayFull}
-          </div>
-        )}
-
-        {/* buttons */}
-        <div style={{ display: 'flex', gap: 8 }}>
-          <button
-            className="q-btn"
-            style={{ flex: 1, justifyContent: 'center', fontSize: 12 }}
-            onClick={onWatch}
-          >
-            <svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
-              <polygon points="5,3 19,12 5,21" />
-            </svg>
-            Watch
-          </button>
-          <button
-            className="q-btn primary"
-            style={{ flex: 2, justifyContent: 'center', fontSize: 12 }}
-            onClick={onWager}
-          >
-            <svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
-              <rect x={2} y={2} width={20} height={20} rx={4} />
-              <circle cx={8} cy={8} r={1.5} fill="currentColor" /><circle cx={16} cy={8} r={1.5} fill="currentColor" />
-              <circle cx={8} cy={16} r={1.5} fill="currentColor" />
-            </svg>
-            Wager on this
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-export default function Matches({ onTabChange, showToast }: MatchesProps) {
-  const [filter, setFilter] = useState<Filter>('all');
-  const [watchMatch, setWatchMatch] = useState<MatchData | null>(null);
-
-  const filtered = matches.filter(m => {
-    if (filter === 'live') return m.live;
-    if (filter === 'upcoming') return !m.live;
-    return true;
+function MatchRow({
+  match, myWallet, onReplay, active,
+}: {
+  match: DbSimMatch; myWallet: string | null;
+  onReplay: () => void; active: boolean;
+}) {
+  const result = resultOf(match, myWallet);
+  const resultColor = result === 'W' ? 'var(--accent)' : result === 'L' ? '#ff4d4d' : 'var(--muted)';
+  const date = new Date(match.finished_at ?? match.created_at).toLocaleDateString(undefined, {
+    month: 'short', day: 'numeric', year: 'numeric',
   });
 
-  const liveCount = matches.filter(m => m.live).length;
+  return (
+    <div style={{
+      background: active ? 'rgba(var(--accent-rgb, 0,255,128), 0.05)' : 'var(--bg-1)',
+      border: `1px solid ${active ? 'var(--accent)' : 'var(--line)'}`,
+      borderRadius: 10,
+      padding: '12px 16px',
+      display: 'flex',
+      alignItems: 'center',
+      gap: 12,
+    }}>
+      {/* Result badge */}
+      <div style={{
+        width: 32, height: 32, borderRadius: 6, flexShrink: 0,
+        background: `${resultColor}22`,
+        border: `1px solid ${resultColor}55`,
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        fontSize: 13, fontWeight: 800, color: resultColor,
+      }}>
+        {result}
+      </div>
 
-  const handleWager = () => {
-    onTabChange('wagers');
-    showToast('Select a match to wager on');
+      {/* Info */}
+      <div style={{ flex: 1, minWidth: 0 }}>
+        <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--fg)', marginBottom: 2 }}>
+          vs {oppLabel(match, myWallet)}
+        </div>
+        <div style={{ fontSize: 11, color: 'var(--muted)' }}>{date}</div>
+      </div>
+
+      {/* Score */}
+      <div style={{
+        fontSize: 20, fontWeight: 800, color: 'var(--fg)',
+        fontVariantNumeric: 'tabular-nums', letterSpacing: 2, flexShrink: 0,
+      }}>
+        {match.home_score} – {match.away_score}
+      </div>
+
+      {/* Replay */}
+      <button
+        className={`q-btn${active ? ' primary' : ''}`}
+        style={{ fontSize: 11, flexShrink: 0 }}
+        onClick={onReplay}
+      >
+        <svg width={11} height={11} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5}>
+          <polygon points="5,3 19,12 5,21" />
+        </svg>
+        {active ? 'Watching' : 'Replay'}
+      </button>
+    </div>
+  );
+}
+
+export default function Matches() {
+  const wallet = getSessionWallet();
+  const [matches, setMatches] = useState<DbSimMatch[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [replayId, setReplayId] = useState<string | undefined>();
+
+  useEffect(() => {
+    listMyMatches(50).then(m => { setMatches(m); setLoading(false); });
+  }, []);
+
+  // After a new simulation finishes, refresh the history list
+  const handleSimFinished = () => {
+    listMyMatches(50).then(setMatches);
   };
 
+  const isReplay = !!replayId;
+
   return (
-    <div>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+
+      {/* ── Viewer ── */}
       <div className="tab-section">
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16 }}>
-          {(['all', 'live', 'upcoming'] as Filter[]).map(f => (
+        <div style={{
+          display: 'flex', alignItems: 'center',
+          justifyContent: 'space-between', marginBottom: 12,
+        }}>
+          <div style={{
+            fontSize: 11, fontWeight: 700, color: 'var(--muted)',
+            letterSpacing: 1, textTransform: 'uppercase',
+          }}>
+            {isReplay ? 'Replay' : 'Simulation'}
+          </div>
+          {isReplay && (
             <button
-              key={f}
-              className={`filter-pill${filter === f ? ' active' : ''}`}
-              onClick={() => setFilter(f)}
-              style={{ display: 'flex', alignItems: 'center', gap: 5 }}
+              className="q-btn"
+              style={{ fontSize: 11 }}
+              onClick={() => setReplayId(undefined)}
             >
-              {f === 'live' && liveCount > 0 && (
-                <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#ff4d4d', display: 'inline-block' }} />
-              )}
-              {f === 'all' ? 'All' : f === 'live' ? `Live (${liveCount})` : 'Upcoming'}
+              <svg width={11} height={11} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5}>
+                <path d="M12 19V5M5 12l7-7 7 7" />
+              </svg>
+              New match
             </button>
-          ))}
+          )}
+        </div>
+        <MatchViewer
+          key={replayId ?? 'new'}
+          matchId={replayId}
+          height="480px"
+          onFinished={handleSimFinished}
+        />
+      </div>
+
+      {/* ── Match history ── */}
+      <div className="tab-section">
+        <div style={{
+          fontSize: 11, fontWeight: 700, color: 'var(--muted)',
+          letterSpacing: 1, textTransform: 'uppercase', marginBottom: 12,
+        }}>
+          Match History
         </div>
 
-        {filtered.length === 0 ? (
-          <div style={{ textAlign: 'center', padding: '48px 0', color: 'var(--muted)', fontSize: 14 }}>
-            No {filter === 'live' ? 'live' : 'upcoming'} matches right now
+        {loading ? (
+          <div style={{ color: 'var(--muted)', fontSize: 14, padding: '24px 0', textAlign: 'center' }}>
+            Loading…
+          </div>
+        ) : matches.length === 0 ? (
+          <div className="empty-state">
+            <div className="empty-icon">
+              <svg width={22} height={22} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8}>
+                <circle cx={12} cy={12} r={10} />
+                <path d="M12 8v4l3 3" />
+              </svg>
+            </div>
+            <h3>No matches yet</h3>
+            <p>Run a simulation above to play your first match.</p>
           </div>
         ) : (
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
-            gap: 16,
-          }}>
-            {filtered.map(match => (
-              <MatchCard
-                key={match.id}
-                match={match}
-                onWatch={() => setWatchMatch(match)}
-                onWager={handleWager}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+            {matches.map(m => (
+              <MatchRow
+                key={m.id}
+                match={m}
+                myWallet={wallet}
+                active={replayId === m.id}
+                onReplay={() => {
+                  setReplayId(m.id);
+                  window.scrollTo({ top: 0, behavior: 'smooth' });
+                }}
               />
             ))}
           </div>
         )}
       </div>
-
-      {watchMatch && (
-        <MatchModal
-          match={watchMatch}
-          onTabChange={onTabChange}
-          onClose={() => setWatchMatch(null)}
-        />
-      )}
     </div>
   );
 }

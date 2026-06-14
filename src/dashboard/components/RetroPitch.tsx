@@ -8,20 +8,21 @@ export interface PlayerPos {
   num: number;
 }
 
+// 5v5: 1 GK + 4 outfield per team
 export const DEFAULT_HOME_433: PlayerPos[] = [
-  { id: 1,  x: 50, y: 6,  num: 1  },
-  { id: 2,  x: 20, y: 18, num: 2  }, { id: 3,  x: 40, y: 16, num: 5  },
-  { id: 4,  x: 60, y: 16, num: 4  }, { id: 5,  x: 80, y: 18, num: 3  },
-  { id: 6,  x: 30, y: 30, num: 8  }, { id: 7,  x: 50, y: 32, num: 6  }, { id: 8,  x: 70, y: 30, num: 10 },
-  { id: 9,  x: 25, y: 42, num: 11 }, { id: 10, x: 50, y: 44, num: 9  }, { id: 11, x: 75, y: 42, num: 7  },
+  { id: 1, x: 50, y: 6,  num: 1 },   // GK
+  { id: 2, x: 35, y: 20, num: 5 },   // CB
+  { id: 3, x: 65, y: 20, num: 4 },   // CB
+  { id: 4, x: 50, y: 33, num: 8 },   // CM
+  { id: 5, x: 50, y: 46, num: 9 },   // ST
 ];
 
 export const DEFAULT_AWAY_433: PlayerPos[] = [
-  { id: 1,  x: 50, y: 94, num: 1  },
-  { id: 2,  x: 20, y: 82, num: 2  }, { id: 3,  x: 40, y: 84, num: 5  },
-  { id: 4,  x: 60, y: 84, num: 4  }, { id: 5,  x: 80, y: 82, num: 3  },
-  { id: 6,  x: 30, y: 70, num: 8  }, { id: 7,  x: 50, y: 68, num: 6  }, { id: 8,  x: 70, y: 70, num: 10 },
-  { id: 9,  x: 25, y: 58, num: 11 }, { id: 10, x: 50, y: 56, num: 9  }, { id: 11, x: 75, y: 58, num: 7  },
+  { id: 1, x: 50, y: 94, num: 1 },   // GK
+  { id: 2, x: 35, y: 80, num: 5 },   // CB
+  { id: 3, x: 65, y: 80, num: 4 },   // CB
+  { id: 4, x: 50, y: 67, num: 8 },   // CM
+  { id: 5, x: 50, y: 54, num: 9 },   // ST
 ];
 
 interface PixelPlayerProps {

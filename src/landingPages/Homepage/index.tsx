@@ -8,6 +8,7 @@ import Strategy from './components/Strategy';
 import Marketplace from './components/Marketplace';
 import Train from './components/Train';
 import Leaderboard from './components/Leaderboard';
+import UpcomingSports from './components/UpcomingSports';
 import CTASection from './components/CTASection';
 import Footer from './components/Footer';
 import Toast from './components/Toast';
@@ -54,6 +55,7 @@ export default function Homepage() {
       <main>
         <Hero onLaunch={handleLaunch} />
         <Features />
+        <UpcomingSports />
         <Strategy />
         <Marketplace needWallet={needWallet} showToast={showToast} />
         <Train needWallet={needWallet} showToast={showToast} />
