@@ -1,8 +1,61 @@
 import { useState, useEffect } from 'react';
 import { type TabId } from '../components/Sidebar';
+import { type OwnedPlayer } from '../../models/models';
 import { type SquadState } from '../../hooks/useSquad';
 import { getEffectiveStats } from '../../lib/playerUtils';
 import { getSessionWallet } from '../../lib/auth';
+import { listPlayer, unlistPlayer, nftConfigured } from '../../lib/nft';
+import { useApp } from '../../context/AppContext';
+import SportTabs from '../components/SportTabs';
+
+// ── Sell (list on marketplace) modal ────────────────────────────────────────
+
+function SellModal({
+  player, busy, onConfirm, onClose,
+}: {
+  player:    OwnedPlayer;
+  busy:      boolean;
+  onConfirm: (priceCusd: string) => void;
+  onClose:   () => void;
+}) {
+  const [price, setPrice] = useState(String(player.price_eth || ''));
+  const valid = Number(price) > 0;
+
+  return (
+    <div className="cs-overlay" onClick={busy ? undefined : onClose}>
+      <div className="cs-modal" onClick={e => e.stopPropagation()}>
+        {!busy && <button className="cs-close" onClick={onClose}>✕</button>}
+        <div className="cs-title">Sell {player.name}</div>
+        <p className="cs-text">
+          List this player on the marketplace in cUSD. When another manager buys it,
+          the sale price (minus the platform fee) is sent straight to your wallet.
+        </p>
+        <input
+          type="number"
+          min={0}
+          step="0.1"
+          value={price}
+          onChange={e => setPrice(e.target.value)}
+          placeholder="Price in cUSD"
+          disabled={busy}
+          style={{
+            width: '100%', padding: '10px 14px', borderRadius: 10,
+            background: 'var(--bg-1)', border: '1px solid var(--line)',
+            color: 'var(--fg)', fontSize: 15, fontFamily: 'inherit', textAlign: 'center',
+          }}
+        />
+        <button
+          className="q-btn primary"
+          disabled={!valid || busy}
+          onClick={() => onConfirm(price)}
+          style={{ opacity: !valid || busy ? 0.5 : 1 }}
+        >
+          {busy ? 'Listing…' : `List for ${valid ? `${price} cUSD` : 'sale'}`}
+        </button>
+      </div>
+    </div>
+  );
+}
 
 const LINEUP_KEY = () => `ailympics_starting5_${getSessionWallet() ?? 'guest'}`;
 
@@ -19,7 +72,11 @@ interface SquadProps {
 
 export default function Squad({ squad, onTabChange, showToast }: SquadProps) {
   const { players, release } = squad;
+  const { listings, refreshListings } = useApp();
   const [releasing, setReleasing] = useState<string | null>(null);
+  const [sellTarget, setSellTarget] = useState<OwnedPlayer | null>(null);
+  const [listing, setListing] = useState(false);
+  const [unlistingId, setUnlistingId] = useState<string | null>(null);
   const [selected, setSelected] = useState<Set<number>>(() => new Set(getStoredLineup()));
 
   // Re-sync when wallet changes
@@ -44,6 +101,43 @@ export default function Squad({ squad, onTabChange, showToast }: SquadProps) {
     });
   };
 
+  const openSell = (player: OwnedPlayer) => {
+    if (!nftConfigured())  { showToast('NFT marketplace is not live yet'); return; }
+    if (!player.token_id)  { showToast('This player has not been minted on-chain yet'); return; }
+    setSellTarget(player);
+  };
+
+  const handleSell = async (priceCusd: string) => {
+    if (!sellTarget?.token_id) return;
+    setListing(true);
+    try {
+      await listPlayer(BigInt(sellTarget.token_id), priceCusd);
+      showToast(`${sellTarget.name} listed for ${priceCusd} cUSD`);
+      setSellTarget(null);
+      await refreshListings();
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : 'Listing failed';
+      if (!/reject|denied|cancel/i.test(msg)) showToast(msg);
+    } finally {
+      setListing(false);
+    }
+  };
+
+  const handleUnlist = async (player: OwnedPlayer) => {
+    if (!player.token_id) return;
+    setUnlistingId(player.ownership.id);
+    try {
+      await unlistPlayer(BigInt(player.token_id));
+      showToast(`${player.name} removed from sale`);
+      await refreshListings();
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : 'Unlisting failed';
+      if (!/reject|denied|cancel/i.test(msg)) showToast(msg);
+    } finally {
+      setUnlistingId(null);
+    }
+  };
+
   const handleRelease = async (userPlayerId: string, name: string) => {
     setReleasing(userPlayerId);
     const err = await release(userPlayerId);
@@ -57,6 +151,7 @@ export default function Squad({ squad, onTabChange, showToast }: SquadProps) {
 
   return (
     <div>
+      <SportTabs />
       <div className="tab-toolbar">
         <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
           <div style={{ fontSize: 13, color: 'var(--muted)' }}>
@@ -95,6 +190,8 @@ export default function Squad({ squad, onTabChange, showToast }: SquadProps) {
             const stats = getEffectiveStats(p);
             const isReleasing = releasing === p.ownership.id;
             const isSelected = selected.has(p.id);
+            const listed = p.token_id ? listings.get(p.token_id)?.active : false;
+            const isUnlisting = unlistingId === p.ownership.id;
 
             return (
               <div
@@ -144,7 +241,7 @@ export default function Squad({ squad, onTabChange, showToast }: SquadProps) {
                       {p.is_nft ? (
                         <>
                           <b><span className="tk">Ξ</span>{p.price_eth}</b>
-                          <span>NFT</span>
+                          <span>{listed ? 'Listed' : 'NFT'}</span>
                         </>
                       ) : (
                         <span style={{ fontSize: 11, color: 'var(--muted)' }}>
@@ -152,7 +249,24 @@ export default function Squad({ squad, onTabChange, showToast }: SquadProps) {
                         </span>
                       )}
                     </div>
-                    {!p.is_nft && (
+                    {p.is_nft ? (
+                      listed ? (
+                        <button
+                          className="buy owned"
+                          disabled={isUnlisting}
+                          onClick={() => handleUnlist(p)}
+                        >
+                          {isUnlisting ? '…' : 'Unlist'}
+                        </button>
+                      ) : (
+                        <button
+                          className="buy"
+                          onClick={() => openSell(p)}
+                        >
+                          Sell
+                        </button>
+                      )
+                    ) : (
                       <button
                         className="buy owned"
                         disabled={isReleasing}
@@ -167,6 +281,15 @@ export default function Squad({ squad, onTabChange, showToast }: SquadProps) {
             );
           })}
         </div>
+      )}
+
+      {sellTarget && (
+        <SellModal
+          player={sellTarget}
+          busy={listing}
+          onConfirm={handleSell}
+          onClose={() => setSellTarget(null)}
+        />
       )}
     </div>
   );

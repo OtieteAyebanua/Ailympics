@@ -3,6 +3,7 @@ import { type OwnedPlayer, type StatLabel } from '../../models/models';
 import { type SquadState } from '../../hooks/useSquad';
 import { runTrainingSession, type TrainingResult } from '../../lib/training';
 import { getEffectiveStats } from '../../lib/playerUtils';
+import SportTabs from '../components/SportTabs';
 
 interface TrainingProps {
   squad:      SquadState;
@@ -229,6 +230,7 @@ export default function Training({ squad, needWallet, showToast }: TrainingProps
 
   return (
     <div>
+      <SportTabs />
       <div className="tab-section">
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 4 }}>
           <span style={{ fontSize: 13, color: 'var(--muted)' }}>Training points</span>

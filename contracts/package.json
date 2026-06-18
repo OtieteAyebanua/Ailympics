@@ -1,0 +1,26 @@
+{
+  "name": "ailympics-contracts",
+  "private": true,
+  "version": "0.0.0",
+  "description": "AIlympics player NFT + marketplace contracts (Celo)",
+  "scripts": {
+    "compile": "hardhat compile",
+    "test": "hardhat test",
+    "deploy:alfajores": "hardhat run scripts/deploy.ts --network alfajores",
+    "deploy:celo": "hardhat run scripts/deploy.ts --network celo",
+    "mint:alfajores": "hardhat run scripts/mintAndList.ts --network alfajores",
+    "mint:celo": "hardhat run scripts/mintAndList.ts --network celo"
+  },
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^5.0.0",
+    "@types/node": "^20.12.12",
+    "hardhat": "^2.22.10",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.4.5"
+  },
+  "dependencies": {
+    "@openzeppelin/contracts": "^5.0.2",
+    "@supabase/supabase-js": "^2.45.0",
+    "dotenv": "^16.4.5"
+  }
+}

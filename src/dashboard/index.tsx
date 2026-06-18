@@ -13,7 +13,7 @@ import Leaderboard from './tabs/Leaderboard';
 import Matches from './tabs/Matches';
 import { matches } from './data';
 import { useWallet } from '../hooks/useWallet';
-import { useSquad } from '../hooks/useSquad';
+import { AppProvider, useApp } from '../context/AppContext';
 
 const TAB_TITLES: Record<TabId, string> = {
   overview:    'Overview',
@@ -27,7 +27,6 @@ const TAB_TITLES: Record<TabId, string> = {
 };
 
 export default function Dashboard() {
-  const [activeTab, setActiveTab] = useState<TabId>('overview');
   const [toastMsg, setToastMsg]   = useState('');
   const [toastVisible, setToastVisible] = useState(false);
   const toastTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
@@ -39,10 +38,28 @@ export default function Dashboard() {
     toastTimer.current = setTimeout(() => setToastVisible(false), 2200);
   }, []);
 
-  const { connected, walletAddr, onCelo, networkName, toggleConnect, needWallet } =
-    useWallet(showToast);
+  const wallet = useWallet(showToast);
 
-  const squad = useSquad();
+  return (
+    <AppProvider showToast={showToast}>
+      <DashboardInner wallet={wallet} showToast={showToast} />
+      <Toast message={toastMsg} visible={toastVisible} />
+    </AppProvider>
+  );
+}
+
+function DashboardInner({
+  wallet,
+  showToast,
+}: {
+  wallet: ReturnType<typeof useWallet>;
+  showToast: (msg: string) => void;
+}) {
+  const [activeTab, setActiveTab] = useState<TabId>('overview');
+
+  const { connected, walletAddr, onCelo, networkName, toggleConnect, needWallet } = wallet;
+
+  const { squad } = useApp();
 
   const renderTab = () => {
     switch (activeTab) {
@@ -116,8 +133,6 @@ export default function Dashboard() {
           {renderTab()}
         </main>
       </div>
-
-      <Toast message={toastMsg} visible={toastVisible} />
     </div>
   );
 }

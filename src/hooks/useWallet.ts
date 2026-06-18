@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useRef } from 'react';
 import { useAccount, useConnect, useDisconnect, useSwitchChain } from 'wagmi';
 import { signMessage } from 'wagmi/actions';
-import { celo } from 'wagmi/chains';
 import { wagmiConfig } from '../lib/wagmi';
+import { ACTIVE_CHAIN_ID } from '../lib/chain';
 import { signInWithWallet, signOut, restoreSession } from '../lib/auth';
 
 export function useWallet(showToast: (msg: string) => void) {
@@ -20,7 +20,7 @@ export function useWallet(showToast: (msg: string) => void) {
   useEffect(() => {
     if (isConnected && !prevConnected.current) {
       showToastRef.current('Wallet connected');
-      if (chain?.id !== celo.id) switchChain({ chainId: celo.id });
+      if (chain?.id !== ACTIVE_CHAIN_ID) switchChain({ chainId: ACTIVE_CHAIN_ID });
 
       if (address) {
         if (restoreSession()) return;
@@ -48,13 +48,14 @@ export function useWallet(showToast: (msg: string) => void) {
       return;
     }
 
-    // Use Coinbase Wallet (Smart Wallet) which provides a built-in modal
-    // covering both Coinbase Wallet and installed injected wallets
-    let targetConnector = connectors.find(c => c.id === 'coinbaseWalletSDK');
-    
-    if (!targetConnector) {
-      targetConnector = connectors[0]; // fallback
-    }
+    // Prefer an installed injected wallet (MetaMask, Coinbase extension, etc.).
+    // EIP-6963 discovery only surfaces injected connectors for wallets that are
+    // actually installed, so any of those is a safe, region-independent choice.
+    // Fall back to the Coinbase connector, then to whatever is first.
+    const targetConnector =
+      connectors.find(c => c.type === 'injected' && c.id !== 'coinbaseWalletSDK') ??
+      connectors.find(c => c.id === 'coinbaseWalletSDK') ??
+      connectors[0];
 
     if (!targetConnector) {
       showToastRef.current('No wallet detected.');
@@ -95,7 +96,7 @@ export function useWallet(showToast: (msg: string) => void) {
     : '';
 
   const networkName = chain?.name ?? '';
-  const onCelo = chain?.id === celo.id;
+  const onCelo = chain?.id === ACTIVE_CHAIN_ID;
 
   return {
     connected: isConnected,

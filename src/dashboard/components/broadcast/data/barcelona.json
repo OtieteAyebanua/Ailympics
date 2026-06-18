@@ -1,0 +1,485 @@
+{
+  "clubId": "barcelona",
+  "season": "2025/26",
+  "rosterSource": "https://www.fcbarcelona.com/en/football/first-team/players",
+  "players": [
+    {
+      "id": "barcelona-13",
+      "name": "Joan Garcia",
+      "displayName": "Joan Garcia",
+      "number": 13,
+      "age": 25,
+      "nationality": "Spain",
+      "preferredFoot": "right",
+      "broadPosition": "GK",
+      "positionCode": "GK",
+      "positionGroup": "GK",
+      "secondaryGroups": [],
+      "archetype": "sweeper_keeper",
+      "traits": [
+        "rushes_out",
+        "plays_short"
+      ],
+      "skinTone": "classic"
+    },
+    {
+      "id": "barcelona-25",
+      "name": "Wojciech Szczesny",
+      "displayName": "Szczesny",
+      "number": 25,
+      "age": 36,
+      "nationality": "Poland",
+      "preferredFoot": "right",
+      "broadPosition": "GK",
+      "positionCode": "GK",
+      "positionGroup": "GK",
+      "secondaryGroups": [],
+      "archetype": "shot_stopper",
+      "traits": [
+        "claims_crosses"
+      ],
+      "skinTone": "classic"
+    },
+    {
+      "id": "barcelona-2",
+      "name": "Joao Cancelo",
+      "displayName": "Cancelo",
+      "number": 2,
+      "age": 32,
+      "nationality": "Portugal",
+      "preferredFoot": "right",
+      "broadPosition": "DF",
+      "positionCode": "RB",
+      "positionGroup": "FB",
+      "secondaryGroups": [
+        "W",
+        "CM"
+      ],
+      "archetype": "inverted_fullback",
+      "traits": [
+        "cuts_inside",
+        "crosses_often"
+      ],
+      "skinTone": "classic"
+    },
+    {
+      "id": "barcelona-3",
+      "name": "Alejandro Balde",
+      "displayName": "Balde",
+      "number": 3,
+      "age": 22,
+      "nationality": "Spain",
+      "preferredFoot": "left",
+      "broadPosition": "DF",
+      "positionCode": "LB",
+      "positionGroup": "FB",
+      "secondaryGroups": [
+        "W"
+      ],
+      "archetype": "attacking_fullback",
+      "traits": [
+        "overlaps",
+        "dribbles_1v1"
+      ],
+      "skinTone": "dark"
+    },
+    {
+      "id": "barcelona-4",
+      "name": "Ronald Araujo",
+      "displayName": "Araujo",
+      "number": 4,
+      "age": 27,
+      "nationality": "Uruguay",
+      "preferredFoot": "right",
+      "broadPosition": "DF",
+      "positionCode": "CB",
+      "positionGroup": "CB",
+      "secondaryGroups": [
+        "FB"
+      ],
+      "archetype": "stopper",
+      "traits": [
+        "hard_tackler",
+        "aerial_threat"
+      ],
+      "skinTone": "brown"
+    },
+    {
+      "id": "barcelona-5",
+      "name": "Pau Cubarsi",
+      "displayName": "Cubarsi",
+      "number": 5,
+      "age": 19,
+      "nationality": "Spain",
+      "preferredFoot": "right",
+      "broadPosition": "DF",
+      "positionCode": "CB",
+      "positionGroup": "CB",
+      "secondaryGroups": [],
+      "archetype": "ball_playing_center_back",
+      "traits": [
+        "covers_lanes",
+        "switches_play"
+      ],
+      "skinTone": "classic"
+    },
+    {
+      "id": "barcelona-15",
+      "name": "Andreas Christensen",
+      "displayName": "Christensen",
+      "number": 15,
+      "age": 30,
+      "nationality": "Denmark",
+      "preferredFoot": "right",
+      "broadPosition": "DF",
+      "positionCode": "CB",
+      "positionGroup": "CB",
+      "secondaryGroups": [
+        "DM"
+      ],
+      "archetype": "ball_playing_center_back",
+      "traits": [
+        "blocks_shots"
+      ],
+      "skinTone": "classic"
+    },
+    {
+      "id": "barcelona-18",
+      "name": "Gerard Martin",
+      "displayName": "Gerard Martin",
+      "number": 18,
+      "age": 24,
+      "nationality": "Spain",
+      "preferredFoot": "left",
+      "broadPosition": "DF",
+      "positionCode": "LB",
+      "positionGroup": "FB",
+      "secondaryGroups": [
+        "CB"
+      ],
+      "archetype": "attacking_fullback",
+      "traits": [
+        "crosses_often"
+      ],
+      "skinTone": "classic"
+    },
+    {
+      "id": "barcelona-23",
+      "name": "Jules Kounde",
+      "displayName": "Kounde",
+      "number": 23,
+      "age": 27,
+      "nationality": "France",
+      "preferredFoot": "right",
+      "broadPosition": "DF",
+      "positionCode": "RB",
+      "positionGroup": "FB",
+      "secondaryGroups": [
+        "CB"
+      ],
+      "archetype": "attacking_fullback",
+      "traits": [
+        "covers_lanes"
+      ],
+      "skinTone": "brown"
+    },
+    {
+      "id": "barcelona-24",
+      "name": "Eric Garcia",
+      "displayName": "Eric Garcia",
+      "number": 24,
+      "age": 25,
+      "nationality": "Spain",
+      "preferredFoot": "right",
+      "broadPosition": "DF",
+      "positionCode": "CB",
+      "positionGroup": "CB",
+      "secondaryGroups": [
+        "DM",
+        "FB"
+      ],
+      "archetype": "ball_playing_center_back",
+      "traits": [
+        "covers_lanes"
+      ],
+      "skinTone": "classic"
+    },
+    {
+      "id": "barcelona-6",
+      "name": "Gavi",
+      "displayName": "Gavi",
+      "number": 6,
+      "age": 21,
+      "nationality": "Spain",
+      "preferredFoot": "right",
+      "broadPosition": "MF",
+      "positionCode": "CM",
+      "positionGroup": "CM",
+      "secondaryGroups": [
+        "AM"
+      ],
+      "archetype": "box_to_box",
+      "traits": [
+        "presses_aggressively",
+        "hard_tackler"
+      ],
+      "skinTone": "classic"
+    },
+    {
+      "id": "barcelona-8",
+      "name": "Pedri",
+      "displayName": "Pedri",
+      "number": 8,
+      "age": 23,
+      "nationality": "Spain",
+      "preferredFoot": "right",
+      "broadPosition": "MF",
+      "positionCode": "CM",
+      "positionGroup": "CM",
+      "secondaryGroups": [
+        "AM",
+        "DM"
+      ],
+      "archetype": "advanced_playmaker",
+      "traits": [
+        "through_balls",
+        "comes_short"
+      ],
+      "skinTone": "classic"
+    },
+    {
+      "id": "barcelona-16",
+      "name": "Fermin Lopez",
+      "displayName": "Fermin",
+      "number": 16,
+      "age": 23,
+      "nationality": "Spain",
+      "preferredFoot": "right",
+      "broadPosition": "MF",
+      "positionCode": "CAM",
+      "positionGroup": "AM",
+      "secondaryGroups": [
+        "CM",
+        "W"
+      ],
+      "archetype": "advanced_playmaker",
+      "traits": [
+        "late_box_runs",
+        "shoots_early"
+      ],
+      "skinTone": "classic"
+    },
+    {
+      "id": "barcelona-17",
+      "name": "Marc Casado",
+      "displayName": "Casado",
+      "number": 17,
+      "age": 22,
+      "nationality": "Spain",
+      "preferredFoot": "right",
+      "broadPosition": "MF",
+      "positionCode": "CDM",
+      "positionGroup": "DM",
+      "secondaryGroups": [
+        "CM"
+      ],
+      "archetype": "destroyer",
+      "traits": [
+        "covers_lanes",
+        "hard_tackler"
+      ],
+      "skinTone": "classic"
+    },
+    {
+      "id": "barcelona-20",
+      "name": "Dani Olmo",
+      "displayName": "Dani Olmo",
+      "number": 20,
+      "age": 28,
+      "nationality": "Spain",
+      "preferredFoot": "right",
+      "broadPosition": "MF",
+      "positionCode": "CAM",
+      "positionGroup": "AM",
+      "secondaryGroups": [
+        "CM",
+        "FW"
+      ],
+      "archetype": "advanced_playmaker",
+      "traits": [
+        "through_balls",
+        "finesse_shot"
+      ],
+      "skinTone": "classic"
+    },
+    {
+      "id": "barcelona-21",
+      "name": "Frenkie de Jong",
+      "displayName": "F. de Jong",
+      "number": 21,
+      "age": 29,
+      "nationality": "Netherlands",
+      "preferredFoot": "right",
+      "broadPosition": "MF",
+      "positionCode": "CM",
+      "positionGroup": "CM",
+      "secondaryGroups": [
+        "DM"
+      ],
+      "archetype": "deep_playmaker",
+      "traits": [
+        "comes_short",
+        "dribbles_1v1"
+      ],
+      "skinTone": "classic"
+    },
+    {
+      "id": "barcelona-22",
+      "name": "Marc Bernal",
+      "displayName": "Bernal",
+      "number": 22,
+      "age": 19,
+      "nationality": "Spain",
+      "preferredFoot": "left",
+      "broadPosition": "MF",
+      "positionCode": "CDM",
+      "positionGroup": "DM",
+      "secondaryGroups": [
+        "CM"
+      ],
+      "archetype": "deep_playmaker",
+      "traits": [
+        "covers_lanes"
+      ],
+      "skinTone": "classic"
+    },
+    {
+      "id": "barcelona-7",
+      "name": "Ferran Torres",
+      "displayName": "Ferran",
+      "number": 7,
+      "age": 26,
+      "nationality": "Spain",
+      "preferredFoot": "right",
+      "broadPosition": "FW",
+      "positionCode": "LW",
+      "positionGroup": "W",
+      "secondaryGroups": [
+        "FW"
+      ],
+      "archetype": "inside_forward",
+      "traits": [
+        "runs_in_behind",
+        "shoots_early"
+      ],
+      "skinTone": "classic"
+    },
+    {
+      "id": "barcelona-9",
+      "name": "Robert Lewandowski",
+      "displayName": "Lewandowski",
+      "number": 9,
+      "age": 37,
+      "nationality": "Poland",
+      "preferredFoot": "right",
+      "broadPosition": "FW",
+      "positionCode": "ST",
+      "positionGroup": "FW",
+      "secondaryGroups": [],
+      "archetype": "poacher",
+      "traits": [
+        "shoots_early",
+        "aerial_threat"
+      ],
+      "skinTone": "classic"
+    },
+    {
+      "id": "barcelona-10",
+      "name": "Lamine Yamal",
+      "displayName": "Lamine Yamal",
+      "number": 10,
+      "age": 18,
+      "nationality": "Spain",
+      "preferredFoot": "left",
+      "broadPosition": "FW",
+      "positionCode": "RW",
+      "positionGroup": "W",
+      "secondaryGroups": [
+        "AM"
+      ],
+      "archetype": "wide_creator",
+      "traits": [
+        "dribbles_1v1",
+        "cuts_inside",
+        "through_balls"
+      ],
+      "skinTone": "brown"
+    },
+    {
+      "id": "barcelona-11",
+      "name": "Raphinha",
+      "displayName": "Raphinha",
+      "number": 11,
+      "age": 29,
+      "nationality": "Brazil",
+      "preferredFoot": "left",
+      "broadPosition": "FW",
+      "positionCode": "LW",
+      "positionGroup": "W",
+      "secondaryGroups": [
+        "FW",
+        "AM"
+      ],
+      "archetype": "inside_forward",
+      "traits": [
+        "presses_aggressively",
+        "cuts_inside",
+        "crosses_often"
+      ],
+      "skinTone": "tan"
+    },
+    {
+      "id": "barcelona-14",
+      "name": "Marcus Rashford",
+      "displayName": "Rashford",
+      "number": 14,
+      "age": 28,
+      "nationality": "England",
+      "preferredFoot": "right",
+      "broadPosition": "FW",
+      "positionCode": "LW",
+      "positionGroup": "W",
+      "secondaryGroups": [
+        "FW"
+      ],
+      "archetype": "inside_forward",
+      "traits": [
+        "runs_in_behind",
+        "cuts_inside",
+        "power_shot"
+      ],
+      "skinTone": "brown"
+    },
+    {
+      "id": "barcelona-19",
+      "name": "Roony Bardghji",
+      "displayName": "Bardghji",
+      "number": 19,
+      "age": 20,
+      "nationality": "Sweden",
+      "preferredFoot": "left",
+      "broadPosition": "FW",
+      "positionCode": "RW",
+      "positionGroup": "W",
+      "secondaryGroups": [
+        "AM"
+      ],
+      "archetype": "wide_creator",
+      "traits": [
+        "dribbles_1v1",
+        "cuts_inside"
+      ],
+      "skinTone": "tan"
+    }
+  ]
+}

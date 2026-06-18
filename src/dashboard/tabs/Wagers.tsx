@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { matches } from '../data';
+import SportTabs from '../components/SportTabs';
 
 interface WagersProps {
   needWallet: () => boolean;
@@ -35,7 +36,9 @@ export default function Wagers({ needWallet, showToast }: WagersProps) {
   };
 
   return (
-    <div className="wagers-layout">
+    <>
+      <SportTabs />
+      <div className="wagers-layout">
       <div className="matches">
         {matches.map(m => {
           const isSel = selected?.matchId === m.id;
@@ -119,6 +122,7 @@ export default function Wagers({ needWallet, showToast }: WagersProps) {
           {pick ? 'Place bet' : 'Select an outcome'}
         </button>
       </div>
-    </div>
+      </div>
+    </>
   );
 }

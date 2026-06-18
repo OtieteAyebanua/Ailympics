@@ -1,8 +1,5 @@
-import { useState, useEffect } from 'react';
 import { type TabId } from '../components/Sidebar';
 import { type SquadState } from '../../hooks/useSquad';
-import { listMyMatches, type DbSimMatch } from '../../lib/matchRoom';
-import { getSessionWallet } from '../../lib/auth';
 
 interface OverviewProps {
   squad:       SquadState;
@@ -10,45 +7,13 @@ interface OverviewProps {
   connected:   boolean;
 }
 
-function resultOf(m: DbSimMatch, wallet: string | null) {
-  const isHome = m.home_wallet === wallet;
-  const my  = isHome ? m.home_score : m.away_score;
-  const opp = isHome ? m.away_score : m.home_score;
-  if (my > opp) return 'W';
-  if (my < opp) return 'L';
-  return 'D';
-}
-
-function oppLabel(m: DbSimMatch, wallet: string | null) {
-  const opp = m.home_wallet === wallet ? m.away_wallet : m.home_wallet;
-  if (!opp) return 'AI';
-  return `${opp.slice(0, 6)}…${opp.slice(-4)}`;
-}
-
-function fmtDate(iso: string) {
-  return new Date(iso).toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
-}
-
 export default function Overview({ squad, onTabChange, connected }: OverviewProps) {
   const { players, count, limit, trainingPoints } = squad;
-  const wallet = getSessionWallet();
-
-  const [matches,  setMatches]  = useState<DbSimMatch[]>([]);
-  const [loadingM, setLoadingM] = useState(true);
-
-  useEffect(() => {
-    listMyMatches(20).then(m => { setMatches(m); setLoadingM(false); });
-  }, []);
 
   const portfolioValue = players
     .filter(p => p.is_nft)
     .reduce((acc, p) => acc + p.price_eth, 0)
     .toFixed(2);
-
-  const finished = matches.filter(m => m.status === 'finished');
-  const wins   = finished.filter(m => resultOf(m, wallet) === 'W').length;
-  const losses = finished.filter(m => resultOf(m, wallet) === 'L').length;
-  const draws  = finished.filter(m => resultOf(m, wallet) === 'D').length;
 
   return (
     <div>
@@ -102,12 +67,8 @@ export default function Overview({ squad, onTabChange, connected }: OverviewProp
               </svg>
               Season Record
             </div>
-            <div className="sc-value">
-              {wins}<span className="sc-unit" style={{ fontSize: 14 }}>W</span>
-              {' '}{losses}<span className="sc-unit" style={{ fontSize: 14, color: '#ff7a7a' }}>L</span>
-              {' '}{draws}<span className="sc-unit" style={{ fontSize: 14, color: 'var(--faint)' }}>D</span>
-            </div>
-            <div className="sc-sub">{finished.length} match{finished.length !== 1 ? 'es' : ''} played</div>
+            <div className="sc-value">—</div>
+            <div className="sc-sub">Matches coming soon</div>
           </div>
         </div>
       </div>
@@ -157,40 +118,16 @@ export default function Overview({ squad, onTabChange, connected }: OverviewProp
 
       <div className="tab-section">
         <div className="tab-title">Match History</div>
-
-        {loadingM ? (
-          <div style={{ color: 'var(--muted)', fontSize: 14, padding: '16px 0' }}>Loading…</div>
-        ) : finished.length === 0 ? (
-          <div style={{ color: 'var(--muted)', fontSize: 14, padding: '16px 0' }}>
-            No matches yet — head to{' '}
-            <button
-              style={{ background: 'none', border: 'none', color: 'var(--accent)', cursor: 'pointer', fontSize: 14, padding: 0, textDecoration: 'underline' }}
-              onClick={() => onTabChange('matches')}
-            >
-              Matches
-            </button>
-            {' '}to play your first.
-          </div>
-        ) : (
-          <div className="activity-feed">
-            {finished.slice(0, 8).map(m => {
-              const result = resultOf(m, wallet);
-              return (
-                <div key={m.id} className="activity-row">
-                  <div className={`gh-badge gh-badge--${result === 'W' ? 'win' : result === 'L' ? 'loss' : 'draw'}`}>
-                    {result}
-                  </div>
-                  <div className="act-text">
-                    <b>vs {oppLabel(m, wallet)}</b>
-                    <span>AIlympics 5v5</span>
-                  </div>
-                  <div className="gh-score">{m.home_score} – {m.away_score}</div>
-                  <div className="gh-date">{fmtDate(m.finished_at ?? m.created_at)}</div>
-                </div>
-              );
-            })}
-          </div>
-        )}
+        <div style={{ color: 'var(--muted)', fontSize: 14, padding: '16px 0' }}>
+          Match history is being migrated to the new{' '}
+          <button
+            style={{ background: 'none', border: 'none', color: 'var(--accent)', cursor: 'pointer', fontSize: 14, padding: 0, textDecoration: 'underline' }}
+            onClick={() => onTabChange('matches')}
+          >
+            match engine
+          </button>
+          {' '}— check back soon.
+        </div>
       </div>
     </div>
   );

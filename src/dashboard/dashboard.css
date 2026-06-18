@@ -750,3 +750,110 @@ it/* ============ Dashboard Layout ============ */
     padding: 16px;
   }
 }
+
+/* ============ Sport tabs ============ */
+.sport-tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.sport-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 8px 16px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 600;
+  border: 1px solid var(--line);
+  color: var(--muted);
+  cursor: pointer;
+  background: none;
+  font-family: inherit;
+  transition: all 0.15s;
+}
+
+.sport-pill-icon {
+  font-size: 15px;
+  line-height: 1;
+}
+
+.sport-pill.active {
+  background: var(--accent);
+  color: var(--ink);
+  border-color: transparent;
+}
+
+.sport-pill.locked {
+  opacity: 0.7;
+}
+
+.sport-pill.locked:hover {
+  opacity: 1;
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.sport-pill-lock {
+  opacity: 0.7;
+}
+
+/* ============ Coming soon popup ============ */
+.cs-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9000;
+  background: rgba(0, 0, 0, 0.72);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(4px);
+}
+
+.cs-modal {
+  position: relative;
+  background: var(--bg-2);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 32px 28px 28px;
+  max-width: 400px;
+  width: 92vw;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.cs-close {
+  position: absolute;
+  top: 14px;
+  right: 16px;
+  background: none;
+  border: none;
+  color: var(--muted);
+  cursor: pointer;
+  font-size: 18px;
+  line-height: 1;
+  padding: 4px;
+}
+
+.cs-icon {
+  font-size: 44px;
+  line-height: 1;
+}
+
+.cs-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--fg);
+}
+
+.cs-text {
+  font-size: 13px;
+  color: var(--muted);
+  line-height: 1.5;
+  margin: 0 0 6px;
+}

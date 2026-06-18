@@ -1,0 +1,474 @@
+{
+  "clubId": "real-madrid",
+  "season": "2025/26",
+  "rosterSource": "https://www.realmadrid.com/en-US/football/first-team/players",
+  "players": [
+    {
+      "id": "real-madrid-1",
+      "name": "Thibaut Courtois",
+      "displayName": "Courtois",
+      "number": 1,
+      "age": 34,
+      "nationality": "Belgium",
+      "preferredFoot": "left",
+      "broadPosition": "GK",
+      "positionCode": "GK",
+      "positionGroup": "GK",
+      "secondaryGroups": [],
+      "archetype": "shot_stopper",
+      "traits": [
+        "claims_crosses"
+      ],
+      "skinTone": "classic"
+    },
+    {
+      "id": "real-madrid-13",
+      "name": "Andriy Lunin",
+      "displayName": "Lunin",
+      "number": 13,
+      "age": 27,
+      "nationality": "Ukraine",
+      "preferredFoot": "right",
+      "broadPosition": "GK",
+      "positionCode": "GK",
+      "positionGroup": "GK",
+      "secondaryGroups": [],
+      "archetype": "shot_stopper",
+      "traits": [
+        "plays_short"
+      ],
+      "skinTone": "classic"
+    },
+    {
+      "id": "real-madrid-3",
+      "name": "Eder Militao",
+      "displayName": "E. Militao",
+      "number": 3,
+      "age": 28,
+      "nationality": "Brazil",
+      "preferredFoot": "right",
+      "broadPosition": "DF",
+      "positionCode": "CB",
+      "positionGroup": "CB",
+      "secondaryGroups": [],
+      "archetype": "stopper",
+      "traits": [
+        "hard_tackler",
+        "blocks_shots"
+      ],
+      "skinTone": "brown"
+    },
+    {
+      "id": "real-madrid-12",
+      "name": "Trent Alexander-Arnold",
+      "displayName": "Trent",
+      "number": 12,
+      "age": 27,
+      "nationality": "England",
+      "preferredFoot": "right",
+      "broadPosition": "DF",
+      "positionCode": "RB",
+      "positionGroup": "FB",
+      "secondaryGroups": [
+        "CM"
+      ],
+      "archetype": "inverted_fullback",
+      "traits": [
+        "crosses_often",
+        "switches_play"
+      ],
+      "skinTone": "tan"
+    },
+    {
+      "id": "real-madrid-17",
+      "name": "Raul Asencio",
+      "displayName": "Asencio",
+      "number": 17,
+      "age": 23,
+      "nationality": "Spain",
+      "preferredFoot": "right",
+      "broadPosition": "DF",
+      "positionCode": "CB",
+      "positionGroup": "CB",
+      "secondaryGroups": [
+        "FB"
+      ],
+      "archetype": "stopper",
+      "traits": [
+        "covers_lanes"
+      ],
+      "skinTone": "tan"
+    },
+    {
+      "id": "real-madrid-18",
+      "name": "Alvaro Carreras",
+      "displayName": "A. Carreras",
+      "number": 18,
+      "age": 23,
+      "nationality": "Spain",
+      "preferredFoot": "left",
+      "broadPosition": "DF",
+      "positionCode": "LB",
+      "positionGroup": "FB",
+      "secondaryGroups": [
+        "W"
+      ],
+      "archetype": "attacking_fullback",
+      "traits": [
+        "overlaps"
+      ],
+      "skinTone": "classic"
+    },
+    {
+      "id": "real-madrid-20",
+      "name": "Fran Garcia",
+      "displayName": "Fran Garcia",
+      "number": 20,
+      "age": 26,
+      "nationality": "Spain",
+      "preferredFoot": "left",
+      "broadPosition": "DF",
+      "positionCode": "LB",
+      "positionGroup": "FB",
+      "secondaryGroups": [
+        "W"
+      ],
+      "archetype": "attacking_fullback",
+      "traits": [
+        "overlaps"
+      ],
+      "skinTone": "classic"
+    },
+    {
+      "id": "real-madrid-22",
+      "name": "Antonio Rudiger",
+      "displayName": "Rudiger",
+      "number": 22,
+      "age": 33,
+      "nationality": "Germany",
+      "preferredFoot": "right",
+      "broadPosition": "DF",
+      "positionCode": "CB",
+      "positionGroup": "CB",
+      "secondaryGroups": [],
+      "archetype": "stopper",
+      "traits": [
+        "hard_tackler",
+        "blocks_shots",
+        "aerial_threat"
+      ],
+      "skinTone": "dark"
+    },
+    {
+      "id": "real-madrid-23",
+      "name": "Ferland Mendy",
+      "displayName": "F. Mendy",
+      "number": 23,
+      "age": 31,
+      "nationality": "France",
+      "preferredFoot": "left",
+      "broadPosition": "DF",
+      "positionCode": "LB",
+      "positionGroup": "FB",
+      "secondaryGroups": [],
+      "archetype": "attacking_fullback",
+      "traits": [
+        "covers_lanes"
+      ],
+      "skinTone": "dark"
+    },
+    {
+      "id": "real-madrid-24",
+      "name": "Dean Huijsen",
+      "displayName": "Huijsen",
+      "number": 24,
+      "age": 21,
+      "nationality": "Spain",
+      "preferredFoot": "right",
+      "broadPosition": "DF",
+      "positionCode": "CB",
+      "positionGroup": "CB",
+      "secondaryGroups": [],
+      "archetype": "ball_playing_center_back",
+      "traits": [
+        "switches_play"
+      ],
+      "skinTone": "classic"
+    },
+    {
+      "id": "real-madrid-5",
+      "name": "Jude Bellingham",
+      "displayName": "Bellingham",
+      "number": 5,
+      "age": 22,
+      "nationality": "England",
+      "preferredFoot": "right",
+      "broadPosition": "MF",
+      "positionCode": "CAM",
+      "positionGroup": "CM",
+      "secondaryGroups": [
+        "AM"
+      ],
+      "archetype": "box_to_box",
+      "traits": [
+        "late_box_runs",
+        "presses_aggressively"
+      ],
+      "skinTone": "brown"
+    },
+    {
+      "id": "real-madrid-6",
+      "name": "Eduardo Camavinga",
+      "displayName": "Camavinga",
+      "number": 6,
+      "age": 23,
+      "nationality": "France",
+      "preferredFoot": "left",
+      "broadPosition": "MF",
+      "positionCode": "CM",
+      "positionGroup": "CM",
+      "secondaryGroups": [
+        "DM",
+        "FB"
+      ],
+      "archetype": "box_to_box",
+      "traits": [
+        "presses_aggressively",
+        "dribbles_1v1"
+      ],
+      "skinTone": "dark"
+    },
+    {
+      "id": "real-madrid-8",
+      "name": "Federico Valverde",
+      "displayName": "Valverde",
+      "number": 8,
+      "age": 27,
+      "nationality": "Uruguay",
+      "preferredFoot": "right",
+      "broadPosition": "MF",
+      "positionCode": "CM",
+      "positionGroup": "CM",
+      "secondaryGroups": [
+        "DM",
+        "FB"
+      ],
+      "archetype": "box_to_box",
+      "traits": [
+        "presses_aggressively",
+        "switches_play",
+        "power_shot"
+      ],
+      "skinTone": "classic"
+    },
+    {
+      "id": "real-madrid-14",
+      "name": "Aurelien Tchouameni",
+      "displayName": "Tchouameni",
+      "number": 14,
+      "age": 26,
+      "nationality": "France",
+      "preferredFoot": "right",
+      "broadPosition": "MF",
+      "positionCode": "CDM",
+      "positionGroup": "DM",
+      "secondaryGroups": [
+        "CB"
+      ],
+      "archetype": "destroyer",
+      "traits": [
+        "covers_lanes",
+        "aerial_threat"
+      ],
+      "skinTone": "dark"
+    },
+    {
+      "id": "real-madrid-15",
+      "name": "Arda Guler",
+      "displayName": "Arda Guler",
+      "number": 15,
+      "age": 21,
+      "nationality": "Turkiye",
+      "preferredFoot": "left",
+      "broadPosition": "MF",
+      "positionCode": "CAM",
+      "positionGroup": "AM",
+      "secondaryGroups": [
+        "W",
+        "CM"
+      ],
+      "archetype": "advanced_playmaker",
+      "traits": [
+        "through_balls",
+        "finesse_shot"
+      ],
+      "skinTone": "classic"
+    },
+    {
+      "id": "real-madrid-19",
+      "name": "Dani Ceballos",
+      "displayName": "D. Ceballos",
+      "number": 19,
+      "age": 29,
+      "nationality": "Spain",
+      "preferredFoot": "right",
+      "broadPosition": "MF",
+      "positionCode": "CM",
+      "positionGroup": "CM",
+      "secondaryGroups": [
+        "DM"
+      ],
+      "archetype": "deep_playmaker",
+      "traits": [
+        "comes_short",
+        "through_balls"
+      ],
+      "skinTone": "classic"
+    },
+    {
+      "id": "real-madrid-21",
+      "name": "Brahim Diaz",
+      "displayName": "Brahim",
+      "number": 21,
+      "age": 26,
+      "nationality": "Morocco",
+      "preferredFoot": "left",
+      "broadPosition": "MF",
+      "positionCode": "RW",
+      "positionGroup": "W",
+      "secondaryGroups": [
+        "AM"
+      ],
+      "archetype": "wide_creator",
+      "traits": [
+        "cuts_inside",
+        "dribbles_1v1"
+      ],
+      "skinTone": "tan"
+    },
+    {
+      "id": "real-madrid-7",
+      "name": "Vinicius Junior",
+      "displayName": "Vini Jr.",
+      "number": 7,
+      "age": 25,
+      "nationality": "Brazil",
+      "preferredFoot": "right",
+      "broadPosition": "FW",
+      "positionCode": "LW",
+      "positionGroup": "W",
+      "secondaryGroups": [
+        "FW"
+      ],
+      "archetype": "inside_forward",
+      "traits": [
+        "dribbles_1v1",
+        "cuts_inside"
+      ],
+      "skinTone": "brown"
+    },
+    {
+      "id": "real-madrid-10",
+      "name": "Kylian Mbappe",
+      "displayName": "Mbappe",
+      "number": 10,
+      "age": 27,
+      "nationality": "France",
+      "preferredFoot": "right",
+      "broadPosition": "FW",
+      "positionCode": "ST",
+      "positionGroup": "FW",
+      "secondaryGroups": [
+        "W"
+      ],
+      "archetype": "complete_forward",
+      "traits": [
+        "runs_in_behind",
+        "shoots_early",
+        "finesse_shot"
+      ],
+      "skinTone": "brown"
+    },
+    {
+      "id": "real-madrid-11",
+      "name": "Rodrygo Goes",
+      "displayName": "Rodrygo",
+      "number": 11,
+      "age": 25,
+      "nationality": "Brazil",
+      "preferredFoot": "right",
+      "broadPosition": "FW",
+      "positionCode": "RW",
+      "positionGroup": "W",
+      "secondaryGroups": [
+        "FW",
+        "AM"
+      ],
+      "archetype": "inside_forward",
+      "traits": [
+        "finesse_shot",
+        "cuts_inside"
+      ],
+      "skinTone": "brown"
+    },
+    {
+      "id": "real-madrid-16",
+      "name": "Gonzalo Garcia",
+      "displayName": "Gonzalo",
+      "number": 16,
+      "age": 22,
+      "nationality": "Spain",
+      "preferredFoot": "right",
+      "broadPosition": "FW",
+      "positionCode": "ST",
+      "positionGroup": "FW",
+      "secondaryGroups": [],
+      "archetype": "poacher",
+      "traits": [
+        "runs_in_behind",
+        "shoots_early"
+      ],
+      "skinTone": "classic"
+    },
+    {
+      "id": "real-madrid-30",
+      "name": "Franco Mastantuono",
+      "displayName": "Mastantuono",
+      "number": 30,
+      "age": 18,
+      "nationality": "Argentina",
+      "preferredFoot": "left",
+      "broadPosition": "FW",
+      "positionCode": "RW",
+      "positionGroup": "W",
+      "secondaryGroups": [
+        "AM"
+      ],
+      "archetype": "wide_creator",
+      "traits": [
+        "cuts_inside",
+        "finesse_shot"
+      ],
+      "skinTone": "classic"
+    },
+    {
+      "id": "real-madrid-9",
+      "name": "Endrick Felipe",
+      "displayName": "Endrick",
+      "number": 9,
+      "age": 19,
+      "nationality": "Brazil",
+      "preferredFoot": "right",
+      "broadPosition": "FW",
+      "positionCode": "ST",
+      "positionGroup": "FW",
+      "secondaryGroups": [],
+      "archetype": "poacher",
+      "traits": [
+        "runs_in_behind",
+        "power_shot"
+      ],
+      "skinTone": "brown"
+    }
+  ]
+}

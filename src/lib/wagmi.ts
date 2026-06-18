@@ -8,6 +8,10 @@ export const wagmiConfig = createConfig({
     injected({ shimDisconnect: true }),
     coinbaseWallet({
       appName: 'Ailympics',
+      // 'eoaOnly' uses the Coinbase Wallet extension/app instead of the hosted
+      // Smart Wallet popup at keys.coinbase.com, which is DNS-blocked in some
+      // regions. Avoids the "site can't be reached" wall for users without a VPN.
+      preference: { options: 'eoaOnly' },
     }),
   ],
   multiInjectedProviderDiscovery: true,
