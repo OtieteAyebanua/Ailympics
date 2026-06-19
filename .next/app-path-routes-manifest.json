@@ -1,0 +1,16 @@
+{
+  "/_not-found/page": "/_not-found",
+  "/api/marketplace/cloneable/route": "/api/marketplace/cloneable",
+  "/api/marketplace/clone/route": "/api/marketplace/clone",
+  "/api/auth/login/route": "/api/auth/login",
+  "/api/marketplace/purchase/route": "/api/marketplace/purchase",
+  "/api/marketplace/nft/route": "/api/marketplace/nft",
+  "/api/squad/info/route": "/api/squad/info",
+  "/api/training/points/route": "/api/training/points",
+  "/api/squad/route": "/api/squad",
+  "/api/squad/release/route": "/api/squad/release",
+  "/api/training/session/route": "/api/training/session",
+  "/api/strategy/route": "/api/strategy",
+  "/page": "/",
+  "/app/page": "/app"
+}

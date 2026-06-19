@@ -5,11 +5,12 @@ import { parseUnits, formatUnits, erc20Abi, type Address } from 'viem';
 import { celo, celoAlfajores } from 'wagmi/chains';
 import { wagmiConfig } from './wagmi';
 import { ACTIVE_CHAIN_ID } from './chain';
-import { JWT_KEY } from './supabase';
+import { env } from './env';
+import { apiPost } from './api';
 
 // Contract addresses come from the deploy step (see contracts/README.md).
-const NFT_ADDRESS    = import.meta.env.VITE_NFT_ADDRESS    as Address | undefined;
-const MARKET_ADDRESS = import.meta.env.VITE_MARKET_ADDRESS as Address | undefined;
+const NFT_ADDRESS    = env.nftAddress    as Address | undefined;
+const MARKET_ADDRESS = env.marketAddress as Address | undefined;
 
 // Which chain the contracts live on — used for read calls so the storefront can
 // load listings even before a wallet is connected.
@@ -34,8 +35,6 @@ const nftAbi = [
   { type: 'function', name: 'setApprovalForAll', stateMutability: 'nonpayable', inputs: [{ name: 'operator', type: 'address' }, { name: 'approved', type: 'bool' }], outputs: [] },
   { type: 'function', name: 'ownerOf', stateMutability: 'view', inputs: [{ name: 'tokenId', type: 'uint256' }], outputs: [{ type: 'address' }] },
 ] as const;
-
-const VERIFY_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/verify-purchase`;
 
 /** True once the NFT + marketplace addresses are configured in env. */
 export function nftConfigured(): boolean {
@@ -168,20 +167,9 @@ export async function unlistPlayer(tokenId: bigint): Promise<{ txHash: string }>
  * ownership directly — this confirms the transfer happened first.
  */
 export async function verifyPurchase(txHash: string): Promise<string | null> {
-  const token   = localStorage.getItem(JWT_KEY);
-  const anonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
   try {
-    const res = await fetch(VERIFY_URL, {
-      method: 'POST',
-      headers: {
-        'Content-Type':  'application/json',
-        'apikey':        anonKey,
-        'Authorization': `Bearer ${token}`,
-      },
-      body: JSON.stringify({ txHash }),
-    });
-    const data = await res.json();
-    return res.ok ? null : (data.error ?? 'Verification failed');
+    await apiPost('/api/verify-purchase', { txHash });
+    return null;
   } catch (err) {
     return err instanceof Error ? err.message : 'Verification request failed';
   }

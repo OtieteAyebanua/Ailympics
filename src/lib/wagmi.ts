@@ -3,6 +3,8 @@ import { celo, celoAlfajores } from 'wagmi/chains';
 import { coinbaseWallet, injected } from 'wagmi/connectors';
 
 export const wagmiConfig = createConfig({
+  // SSR-safe storage hydration for Next (server render won't touch the DOM).
+  ssr: true,
   chains: [celo, celoAlfajores],
   connectors: [
     injected({ shimDisconnect: true }),

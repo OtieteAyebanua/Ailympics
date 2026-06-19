@@ -1,5 +1,6 @@
+'use client';
 import { useState, useCallback, useRef, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useRouter } from 'next/navigation';
 import './style.css';
 import Nav from './components/Nav';
 import Hero from './components/Hero';
@@ -15,7 +16,7 @@ import Toast from './components/Toast';
 import { useWallet } from '../../hooks/useWallet';
 
 export default function Homepage() {
-  const navigate = useNavigate();
+  const router = useRouter();
   const [toastMsg, setToastMsg] = useState('');
   const [toastVisible, setToastVisible] = useState(false);
   const toastTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
@@ -35,9 +36,9 @@ export default function Homepage() {
   useEffect(() => {
     if (pendingNavigate && connected) {
       setPendingNavigate(false);
-      navigate('/app');
+      router.push('/app');
     }
-  }, [pendingNavigate, connected, navigate]);
+  }, [pendingNavigate, connected, router]);
 
   const handleLaunch = useCallback(() => {
     if (!connected) {
@@ -46,8 +47,8 @@ export default function Homepage() {
       toggleConnect();
       return;
     }
-    navigate('/app');
-  }, [connected, navigate, showToast, toggleConnect]);
+    router.push('/app');
+  }, [connected, router, showToast, toggleConnect]);
 
   return (
     <>

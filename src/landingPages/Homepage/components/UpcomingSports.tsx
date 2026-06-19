@@ -44,7 +44,7 @@ export default function UpcomingSports() {
           <Reveal className="us-visual">
             <div className="us-img-card">
               <div className="us-img-glow" />
-              <img src={sportsBanner} alt="Tennis, Racing and Boxing" className="us-img" />
+              <img src={sportsBanner.src} alt="Tennis, Racing and Boxing" className="us-img" />
             </div>
           </Reveal>
         </div>

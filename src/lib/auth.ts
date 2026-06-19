@@ -1,6 +1,6 @@
-import { JWT_KEY } from './supabase';
+import { JWT_KEY, env } from './env';
 
-const FUNCTION_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/auth-wallet`;
+const LOGIN_URL = `${env.apiUrl}/api/auth/login`;
 
 export async function signInWithWallet(
   address: string,
@@ -9,14 +9,9 @@ export async function signInWithWallet(
   const message   = buildMessage(address);
   const signature = await signMessage(message);
 
-  const anonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
-  const res = await fetch(FUNCTION_URL, {
+  const res = await fetch(LOGIN_URL, {
     method: 'POST',
-    headers: {
-      'Content-Type':  'application/json',
-      'apikey':        anonKey,
-      'Authorization': `Bearer ${anonKey}`,
-    },
+    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ address, message, signature }),
   });
 

@@ -14,6 +14,7 @@ import type {
   TeamPair,
 } from "../../../lib/agenticfoot/broadcast";
 import type { MatchManifest } from "../../../lib/agenticfoot/domain";
+import { env, JWT_KEY } from "../../../lib/env";
 
 export type { ActionCue, BroadcastSyncPacket, ScorebugState, SecondPayload, TeamPair };
 
@@ -22,29 +23,29 @@ export interface ManifestResponse {
   teams: TeamPair;
 }
 
-const viteEnv = (import.meta as unknown as { env?: Record<string, string | undefined> }).env;
-
 // Two connection modes:
-//  • Direct  — VITE_BROADCAST_URL points straight at the agenticfoot VPS
+//  • Direct  — NEXT_PUBLIC_BROADCAST_URL points straight at the agenticfoot VPS
 //              (e.g. local dev); endpoints are <base>/broadcast/{manifest,stream}.
-//  • Relay   — default; we go through the Supabase `broadcast-stream` edge
-//              function, which proxies the VPS and enforces auth. EventSource
-//              can't set headers, so credentials ride as query params.
-const DIRECT_URL   = viteEnv?.["VITE_BROADCAST_URL"];
-const SUPABASE_URL = viteEnv?.["VITE_SUPABASE_URL"];
-const ANON_KEY     = viteEnv?.["VITE_SUPABASE_ANON_KEY"];
-const RELAY_URL    = SUPABASE_URL ? `${SUPABASE_URL}/functions/v1/broadcast-stream` : undefined;
+//  • Relay   — default; we go through the Next `/api/broadcast-stream` route,
+//              which proxies the VPS and enforces auth. EventSource can't set
+//              headers, so the app JWT rides as a `?token=` query param.
+// Trailing slash tolerated — ngrok/VPS URLs are often pasted by hand.
+const DIRECT_URL = env.broadcastUrl?.replace(/\/+$/, "") || undefined;
+const RELAY_URL  = `${env.apiUrl}/api/broadcast-stream`;
 
-/** Build the URL for a broadcast resource, with relay auth params when needed. */
+/** Relay URL with the resource + app JWT as query params (relative-safe). */
+function relayUrl(resource: string, extra?: Record<string, string>): string {
+  const params = new URLSearchParams({ resource });
+  const token = typeof localStorage !== "undefined" ? localStorage.getItem(JWT_KEY) : null;
+  if (token) params.set("token", token);
+  for (const [k, v] of Object.entries(extra ?? {})) params.set(k, v);
+  return `${RELAY_URL}?${params.toString()}`;
+}
+
+/** Build the URL for a broadcast resource. */
 export function endpoint(resource: "manifest" | "stream"): string {
   if (DIRECT_URL) return `${DIRECT_URL}/broadcast/${resource}`;
-  if (!RELAY_URL) return `http://localhost:8787/broadcast/${resource}`;
-  const url = new URL(RELAY_URL);
-  url.searchParams.set("resource", resource);
-  if (ANON_KEY) url.searchParams.set("apikey", ANON_KEY);
-  const token = typeof localStorage !== "undefined" ? localStorage.getItem("ailympics_jwt") : null;
-  if (token) url.searchParams.set("token", token);
-  return url.toString();
+  return relayUrl(resource);
 }
 
 /**
@@ -53,12 +54,7 @@ export function endpoint(resource: "manifest" | "stream"): string {
  */
 export function resolveAudioUrl(relative: string): string {
   if (DIRECT_URL) return new URL(relative, DIRECT_URL).toString();
-  if (!RELAY_URL) return new URL(relative, 'http://localhost:8787').toString();
-  const url = new URL(RELAY_URL);
-  url.searchParams.set('resource', 'audio');
-  url.searchParams.set('path', relative);
-  if (ANON_KEY) url.searchParams.set('apikey', ANON_KEY);
-  return url.toString();
+  return relayUrl('audio', { path: relative });
 }
 
 export async function fetchManifest(): Promise<ManifestResponse> {
